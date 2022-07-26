@@ -1,12 +1,11 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { UserTokenDto } from '@usaha/api-interfaces';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { UserAuthService } from '../../services/user-auth/user-auth.service';
+import { Body, Controller, Get, Post,Request, UseGuards } from '@nestjs/common';
+import { UserDto, UserTokenDto } from '@usaha/api-interfaces';
+import { AuthUserGuard } from './auth-user.guard';
+import { AuthUserService } from './auth-user.service';
 
-@Controller('user-auth')
-export class UserAuthController {
-
-    constructor(private authService: UserAuthService) {}
+@Controller('auth-user')
+export class AuthUserController {
+    constructor(private authService: AuthUserService) {}
     
     @Post('login')
     async login(@Body('identifier') identifier:string, @Body('password') password:string):Promise<UserTokenDto|null> {
@@ -17,18 +16,18 @@ export class UserAuthController {
       // return null;
     }
     
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AuthUserGuard)
     @Get('my-profile')
-    async getProfile(@Request() req) {
+    async getProfile(@Request() req):Promise<UserDto> {
+      // console.log(req.aaa,"INI AAAA");
+      
       const userLoggedIn = req.user;
       const user = await this.authService.getProfile(userLoggedIn.id);
       return user;
     }
     
     @Post('register')
-    async register(@Request() req) {      
+    async register(@Request() req):Promise<void> {      
       await this.authService.register(req.body)
     }
-    // TODO remove account
-    // TODO update profile
 }

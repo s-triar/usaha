@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { UserDto } from '@usaha/api-interfaces';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {MatListModule} from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'usaha-profile',
@@ -12,7 +13,8 @@ import {MatListModule} from '@angular/material/list';
   imports: [
     CommonModule,
     FlexLayoutModule,
-    MatListModule
+    MatListModule,
+    MatButtonModule
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
@@ -25,5 +27,9 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.user$ = this._authStateService.getUser();
+  }
+  logout():void{
+    this._authStateService.loggedOut();
+    window.location.reload();
   }
 }

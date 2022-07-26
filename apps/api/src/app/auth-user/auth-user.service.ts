@@ -1,14 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from '../../../user/user.service';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import { RegisterUserDto, UserDto, UserTokenDto, UserTokenPayload } from '@usaha/api-interfaces';
 import { ConfigService } from '@nestjs/config';
-import { HashIdService } from '../../../hash-id/hash-id.service';
-import { User } from '../../../../typeorm/entities/auth';
+import { JwtService } from '@nestjs/jwt';
+import { RegisterUserDto, UserDto, UserTokenDto, UserTokenPayload } from '@usaha/api-interfaces';
+import { User } from '../../typeorm/entities/auth';
+import { HashIdService } from '../hash-id/hash-id.service';
+import { UserService } from '../user/user.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class UserAuthService {
+export class AuthUserService {
     constructor(
         private userService: UserService,
         private jwtService: JwtService,

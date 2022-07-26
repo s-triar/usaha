@@ -1,6 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../auth';
 import { Base } from '../base.entity';
+import { ShopAddress } from './shop-address.entity';
+import { ShopType } from './shop-type.entity';
 
 @Entity({name:'shops'})
 export class Shop extends Base{
@@ -16,11 +18,14 @@ export class Shop extends Base{
     photo?:string;
     @Column({nullable:false})
     phone:string;
-    @Column({nullable:false})
-    address:string;
-    @Column({nullable:true})
-    location?:string;
-    @ManyToOne(type=>User,{cascade:true})
+    @ManyToOne(()=>ShopType,{cascade:true})
+    @JoinColumn({name:'shop_type_id'})
+    shop_type?: ShopType;
+    @Column({nullable:false,unsigned:true})
+    shop_type_id:number;
+    @OneToMany(() => ShopAddress, (shop_address) => shop_address.shop)
+    address?:ShopAddress[];
+    @ManyToOne(()=>User,{cascade:true})
     @JoinColumn({name:'owner_id'})
     owner?: User;
     @Column({nullable:false,unsigned:true})

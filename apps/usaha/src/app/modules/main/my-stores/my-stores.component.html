@@ -1,3 +1,15 @@
-<p>my-stores works!</p>
+<div class="container-my-stores">
+    <usaha-search-form-list (searchValue)="searchValue($event)"></usaha-search-form-list>
+    <mat-nav-list style="overflow-y: auto;">
+      <a mat-list-item *ngFor="let item of items">{{item.name}}</a>
+    </mat-nav-list>
+    <usaha-pagination-simple 
+    #pagination
+    (pageSelectedChanged)="pageSelectedChange($event)"
+    (nPageChanged)="nPageChange($event)"
+    ></usaha-pagination-simple>
+</div>
+<a mat-fab style="position: absolute;right:1rem; bottom:8rem;" [routerLink]="['/my-stores/add']">
+    <mat-icon>add</mat-icon>
+</a>
 
-<usaha-pagination-simple></usaha-pagination-simple>

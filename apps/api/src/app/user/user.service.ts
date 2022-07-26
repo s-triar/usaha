@@ -1,31 +1,23 @@
-import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {  RegisterUserDto, UserDto } from '@usaha/api-interfaces';
 import { Repository } from 'typeorm/repository/Repository';
 import { User } from '../../typeorm/entities/auth/User.entity';
 import { environment } from '../../environments/environment';
 import * as bcrypt from 'bcrypt';
-// import { REQUEST } from '@nestjs/core';
-import { CURRENT_USER, RequestWithUser } from '../auth/current-user.module';
 import { HashIdService } from '../hash-id/hash-id.service';
 
-
-// export interface CreateUserDtoFull extends  CreateUserDto {
-//     id:string;
-// } 
 @Injectable()
 export class UserService{
     constructor(
         @InjectRepository(User) private _usersRepository: Repository<User>,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        @Inject(CURRENT_USER) private readonly _currentUser: RequestWithUser,
         private _hasher: HashIdService
       ) {
         
       }
       
       async create(user: RegisterUserDto):Promise<string>{
-        console.log("lg inn", this._currentUser.user);
+        // console.log("lg inn", this._currentUser.user);
         if(user.confirmPassword !== user.password){
           throw new UnprocessableEntityException("password and confirm password do not match");   
       }
@@ -39,7 +31,7 @@ export class UserService{
           ...usert, 
           id:0,
           created_at: new Date(),
-          created_by_id:this._currentUser.user? this._currentUser.user.id : null
+          created_by_id:null, //this._currentUser.user? this._currentUser.user.id : null
         };
         candidate.password = await bcrypt.hash(candidate.password, environment.saltNumber);
         const new_user =  await this._usersRepository.save(candidate)

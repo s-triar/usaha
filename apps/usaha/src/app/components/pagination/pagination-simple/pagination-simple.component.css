@@ -1,0 +1,18 @@
+/deep/ .select-page{
+    /* height: 3rem; */
+    font-size: medium;
+}
+
+/deep/ .select-page .mat-form-field-infix{
+    min-width: 50px !important;
+    width: 50px !important;
+    padding: 0.5rem 0.5rem !important;
+
+}
+/deep/ .select-page .mat-form-field-wrapper{
+    padding-bottom: 0px !important;
+}
+
+.toolbar-white{
+    background-color: white;
+}

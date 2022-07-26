@@ -1,0 +1,10 @@
+.toolbar-white{
+    background-color: white;
+}
+.full-width-form{
+    width: 100%;
+}
+
+.full-width-form .mat-form-field{
+    width: 100%;
+}

@@ -1,14 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 
-html,body{
-    margin: 0px;
-    height: 100%;
-    
-    width: 100%;
+html,
+body {
+  margin: 0px;
+  height: 100%;
+
+  width: 100%;
 }
 
-.container{
-    margin-left: 1rem;
-    margin-right: 1rem;
+.container {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.header-page {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.container-form-action{
+  margin-top: 2rem;
+  margin-bottom: 2.5rem;
 }

@@ -1,1 +1,27 @@
-<p>pagination-simple works!</p>
+<div
+  class="toolbar-white"
+  fxLayout="row"
+  fxLayoutAlign="space-evenly center"
+>
+  <button mat-icon-button (click)="fastPreviousPage()" [disabled]="currentPage.isCurrentPageStartPage">
+    <mat-icon>first_page</mat-icon>
+  </button>
+  <button mat-icon-button (click)="previousPage()" [disabled]="currentPage.isCurrentPageStartPage">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <form [formGroup]="formSearch">
+    <mat-form-field appearance="outline" class="select-page">
+      <mat-select formControlName="PageNumber" (selectionChange)="selectPage($event)">
+        <mat-option *ngFor="let page of pages" [value]="page">
+          {{ page }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+  <button mat-icon-button (click)="nextPage()" [disabled]="currentPage.isCurrentPageLastPage">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+  <button mat-icon-button (click)="fastNextPage()" [disabled]="currentPage.isCurrentPageLastPage">
+    <mat-icon>last_page</mat-icon>
+  </button>
+</div>

@@ -8,8 +8,8 @@ export class UserSeederService {
         private readonly userService: UserService
       ) {}
     async seedUser():Promise<void>{
+      console.log("seed users");
       const users = await this.userService.findAll();
-      console.log(users);
       
       if(users.length==0){
           const user: RegisterUserDto = {

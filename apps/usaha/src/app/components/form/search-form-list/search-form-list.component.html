@@ -1,0 +1,10 @@
+<div class="toolbar-white">
+    <form [formGroup]="form" class="full-width-form">    
+        <mat-form-field  appearance="fill" >
+            <input matInput type="text" formControlName="search" placeholder="Cari...">
+            <button *ngIf="form.controls.search.value!==''" matSuffix mat-icon-button aria-label="Clear" (click)="clearInput()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </form>
+</div>

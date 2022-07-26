@@ -33,6 +33,11 @@ const routes: Routes = [
             }
         ]
     },
+    {
+        path:'my-stores/add',
+        loadComponent: ()=> import('./modules/main/add-my-store/add-my-store.component').then(x=>x.AddMyStoreComponent),
+        canActivate:[AuthGuard],
+    },
     { 
         path: 'auth', 
         loadComponent: () =>  import('./modules/auth/auth.component').then(x=>x.AuthComponent),

@@ -1,0 +1,85 @@
+<div class="container-add-my-store">
+  <header>
+    <usaha-page-header-simple title="Tambah Toko"></usaha-page-header-simple>
+  </header>
+  <form class="container container-form" [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="fill">
+      <mat-label>Nama Toko</mat-label>
+      <input matInput placeholder="Nama Toko" formControlName="name" />
+      <mat-error *ngIf="form.getError('required', 'name')">Nama harus diisi</mat-error>
+      
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Kode Toko</mat-label>
+        <input matInput placeholder="Kode Toko" formControlName="shop_code" />
+        <mat-error *ngIf="form.getError('required', 'shop_code')">Kode Toko harus diisi</mat-error>
+        <mat-error *ngIf="form.getError('shopCodeAlreadyExist', 'shop_code')">Kode Toko sudah dipakai</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Jenis Toko</mat-label>
+        <mat-select formControlName="shop_type_id">
+            <mat-option *ngFor="let item of shopTypes$ | async" [value]="item.id">{{item.name}}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.getError('required', 'shop_type_id')">Jenis Toko harus diisi</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Nomor Telepon Toko</mat-label>
+        <input matInput placeholder="Nomor Telepon Toko" formControlName="phone"/>
+        <mat-error *ngIf="form.getError('required', 'phone')">Nomor Telepon Toko harus diisi</mat-error>
+        <mat-error *ngIf="form.getError('pattern', 'phone')">Nomor Telepon Toko hanya menerima angka</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Email Toko</mat-label>
+        <input matInput placeholder="Email Toko" formControlName="email" />
+        <mat-error *ngIf="form.getError('email', 'email')">Email Toko harus valid</mat-error>
+      </mat-form-field>
+      <fieldset formGroupName="address">
+        <legend>Alamat</legend>
+        <br>
+        <mat-form-field appearance="fill">
+            <mat-label>Provinsi</mat-label>
+            <mat-select (selectionChange)="changeProvince($event)">
+              <mat-option *ngFor="let item of provinces$ | async" [value]="item">{{item.name}}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.getError('required', 'address.province')">Alamat Provinsi harus diisi</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Kota/Kabupaten</mat-label>
+            <mat-select (selectionChange)="changeRegency($event)" [disabled]="cityControl.disabled">
+              <mat-option *ngFor="let item of cities$ | async" [value]="item">{{item.name}}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.getError('required', 'address.city')">Alamat Kota/Kabupaten harus diisi</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Kecamatan</mat-label>
+            <mat-select (selectionChange)="changeDistrict($event)" [disabled]="districtControl.disabled">
+              <mat-option *ngFor="let item of districts$ | async" [value]="item">{{item.name}}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.getError('required', 'address.district')">Alamat Kecamatan harus diisi</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Desa/Kelurahan</mat-label>
+            <mat-select (selectionChange)="changeVillage($event)" [disabled]="villageControl.disabled">
+              <mat-option *ngFor="let item of villages$ | async" [value]="item">{{item.name}}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.getError('required', 'address.village')">Alamat Desa harus diisi</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Jalan</mat-label>
+            <input matInput placeholder="Jalan" formControlName="street" [disabled]="streetControl.disabled"/>
+            <mat-error *ngIf="form.getError('required', 'address.street')">Alamat Jalan harus diisi</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Kode Pos</mat-label>
+            <input matInput placeholder="Kode Pos" formControlName="postal_code" [disabled]="postalCodeControl.disabled"/>
+            <mat-error *ngIf="form.getError('required', 'address.postal_code')">Alamat Kode Pos harus diisi</mat-error>
+            <mat-error *ngIf="form.getError('maxlength', 'address.postal_code') || form.getError('minlength', 'address.postal_code')">Alamat Kode Pos harus 5 karakter</mat-error>
+            <mat-error *ngIf="form.getError('pattern', 'address.postal_code')">Alamat Kode Pos hanya menerima angka</mat-error>
+          </mat-form-field>
+      </fieldset>
+      <div fxLayout="row" fxLayoutAlign="space-evenly center" class="container-form-action">
+        <button mat-stroked-button color="accent" type="button" (click)="resetForm()" [disabled]="isFormBusy">Reset</button>
+        <button mat-raised-button color="accent" type="submit" [disabled]="form.invalid || isFormBusy">Submit</button>
+      </div>
+  </form>
+</div>
