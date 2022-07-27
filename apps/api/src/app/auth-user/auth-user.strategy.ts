@@ -22,7 +22,8 @@ export class AuthUserStrategy extends PassportStrategy(Strategy,'jwt-user') {
   }
 
   async validate(payload: UserTokenPayload):Promise<UserLoggedIn> {
-   
+    console.log(payload.sub,"auth user");
+    
     return {id:this._hasherId.decrypt(payload.sub)};
     // return await this._userAuthService.validateUser(payload.sub);
   }

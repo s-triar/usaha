@@ -16,7 +16,10 @@ export class AuthStateService {
   constructor(
     private _localStrg: LocalStorageService,
     private _authService: AuthService
-  ) {}
+  ) {
+    const temp = this._localStrg.get('access_token');
+    this.setToken(temp);
+  }
 
   loggedIn(token:string){
     this.setToken(token);

@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthShopGuard } from './guards/auth-shop.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { UnAuthGuard } from './guards/un-auth.guard';
+import { ShopTokenResolver } from './modules/workspace/shop-token.resolver';
 
 const routes: Routes = [
     // {
@@ -66,6 +68,29 @@ const routes: Routes = [
                 loadComponent: ()=>import('./modules/auth/renew-password/renew-password.component').then(x=>x.RenewPasswordComponent)
             }
         ]
+    },
+    {
+        path:'workspace/:shop_id',
+        loadComponent:() => import('./modules/workspace/workspace.component').then(x=>x.WorkspaceComponent),
+        resolve:{shop_token:ShopTokenResolver},
+        canActivate:[AuthGuard],
+        children:[
+            {
+                path:'',
+                pathMatch:'full',
+                redirectTo:'cashier'
+            },
+            {
+                path: 'cashier',
+                loadComponent: () => import('./modules/workspace/cashier/cashier.component').then(x=>x.CashierComponent),
+                
+            },
+            {
+                path: 'product',
+                loadComponent: () => import('./modules/workspace/product/product.component').then(x=>x.ProductComponent)
+            },
+        ]
+        
     }
   ];
   

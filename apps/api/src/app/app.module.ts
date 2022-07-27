@@ -15,10 +15,13 @@ import { ShopAuthModule } from './auth-shop/shop-auth.module';
 import { WilayahAdministrativeModule } from './wilayah-administrative/wilayah-administrative.module';
 import { wilayah_administrative_entities } from '../typeorm/entities/wilayah';
 import { ShopTypeModule } from './shop-type/shop-type.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
     AuthUserModule,
+    ShopAuthModule,
+
     UserModule,
     // CurrentUserModule,
     ConfigModule.forRoot({
@@ -32,15 +35,19 @@ import { ShopTypeModule } from './shop-type/shop-type.module';
       username: process.env.MYSQL_DB_APP_USERNAME,
       password: process.env.MYSQL_DB_APP_PASSWORD,
       database: process.env.MYSQL_DB_APP_DATABASE,
-      entities: [...auth_entities, ...application_entities, ...wilayah_administrative_entities],
+      entities: [
+        ...auth_entities,
+        ...application_entities,
+        ...wilayah_administrative_entities,
+      ],
       // subscribers:[BaseEntitySubscriber],
       synchronize: true,
       autoLoadEntities: true,
     }),
     ShopModule,
     ShopTypeModule,
-    ShopAuthModule,
     WilayahAdministrativeModule,
+    ProductModule,
     // TypeOrmModule.forRoot({
     //   name:'auth_db',
     //   type: 'mysql',

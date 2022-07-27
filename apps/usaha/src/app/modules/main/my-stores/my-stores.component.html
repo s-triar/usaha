@@ -1,7 +1,7 @@
 <div class="container-my-stores">
     <usaha-search-form-list (searchValue)="searchValue($event)"></usaha-search-form-list>
     <mat-nav-list style="overflow-y: auto;">
-      <a mat-list-item *ngFor="let item of items">{{item.name}}</a>
+      <a mat-list-item *ngFor="let item of items" [routerLink]="['/workspace/'+item.id]">{{item.name}}</a>
     </mat-nav-list>
     <usaha-pagination-simple 
     #pagination

@@ -54,6 +54,9 @@ export class ShopService {
 
   findOneByHashedId(id: string): Promise<Shop> {
     const id_decode = this._hasher.decrypt(id);
+    if(!id_decode){
+      throw new UnprocessableEntityException('Id is not recognized');
+    }
     return this._shopRepository.findOneBy({ id: id_decode });
   }
 
