@@ -1,0 +1,11 @@
+<div role="group" class="input-currency-container"
+     [formGroup]="parts"
+     [attr.aria-labelledby]="formField?.getLabelId()"
+     (focusin)="onFocusIn($event)"
+     (focusout)="onFocusOut($event)">
+  <input class="input-currency-element"
+         autocomplete="off"
+         formControlName="formated"
+         (input)="onFormatChange($event)"
+         #valFormat>
+</div>

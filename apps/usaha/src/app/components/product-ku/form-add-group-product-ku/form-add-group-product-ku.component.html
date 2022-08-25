@@ -1,0 +1,22 @@
+<form [formGroup]="form">
+    <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+        <mat-label>Nama Grup Produk</mat-label>
+        <input matInput placeholder="Nama Grup Produk" formControlName="Name" autocomplete="off">
+        <mat-hint class="color-warn" *ngIf="(NameGroup?.dirty || NameGroup?.touched) && NameGroup?.hasError('required')">Nama grup produk harus diisi.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="NameGroup?.hasError('duplicateGoodsGroupNameError')">Nama group produk tersebut sudah ada.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="NameGroup?.hasError('maxlength')">Maksimal panjang nama grup produk 255 karakter.</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+        <mat-label>Deskripsi Grup Produk</mat-label>
+        <textarea matInput
+        placeholder="Deskripsi Grup Produk" autocomplete="off"
+        MatTextareaAutosize cdkTextareaAutosize="true" cdkAutosizeMinRows="4" cdkAutosizeMaxRows="12"
+        formControlName="Description"
+        ></textarea>
+        <mat-hint class="color-warn" *ngIf="DescriptionGroup?.hasError('maxlength')">Maksimal panjang deskripsi produk 255 karakter.</mat-hint>
+    </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="0px" fxFlexFill style="width:100%;">
+        <button mat-button color="warn" mat-dialog-close>Batal</button>
+        <button mat-raised-button color="primary" (click)="submit()">Selesai</button>
+    </div>
+</form>

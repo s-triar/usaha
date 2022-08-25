@@ -1,0 +1,12 @@
+<mat-dialog-content >
+  <mat-action-list cdkFocusInitial>
+    <ng-container  *ngFor="let item of data">
+      <button mat-list-item (click)="go(item.link)">
+        <div style="width: 100%;">
+          <h3 style="font-weight: bold;">{{item.title}}</h3>
+          <p>{{item.description}}</p>
+        </div>
+      </button>
+    </ng-container>
+ </mat-action-list>
+</mat-dialog-content>

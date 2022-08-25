@@ -1,0 +1,12 @@
+<!-- <div class="bg-white shadow-md px-4 py-6"> -->
+    <div mat-dialog-title class="notif-title-container">
+        <span>{{data.title}}</span>
+    </div>
+    <div mat-dialog-content class="notif-content-container">
+        <p *ngIf="data.message !==null">{{data.message}}</p>
+    </div>
+    <div mat-dialog-actions class="notif-action-container">
+        <button mat-flat-button (click)="closeWith(true)" [color]="data.type === 'error' ? 'warn': 'primary'" cdkFocusInitial>{{data.type === 'error' ? 'Tutup': 'Ok'}}</button>
+
+    </div>
+<!-- </div> -->

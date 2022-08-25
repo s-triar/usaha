@@ -24,7 +24,7 @@ export class Shop extends Base{
     @Column({nullable:false,unsigned:true})
     shop_type_id:number;
     @OneToMany(() => ShopAddress, (shop_address) => shop_address.shop)
-    address?:ShopAddress[];
+    addresses?:ShopAddress[];
     @ManyToOne(()=>User,{cascade:true})
     @JoinColumn({name:'owner_id'})
     owner?: User;

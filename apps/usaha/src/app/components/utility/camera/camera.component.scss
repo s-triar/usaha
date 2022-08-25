@@ -1,0 +1,42 @@
+:host {
+    z-index: 9999999;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+.video-take-pic{
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+}
+
+.panel-button-cam{
+    position: fixed;
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+}
+
+.panel-button-cam.landscape{
+    height: 100%;
+    right: 0;
+    padding-right: 2rem;
+}
+
+.panel-button-cam.portrait{
+    width: 100%;
+    bottom: 0;
+    padding-bottom: 2rem;
+}

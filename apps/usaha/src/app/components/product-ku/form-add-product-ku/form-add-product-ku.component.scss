@@ -1,0 +1,23 @@
+// override
+.form-input-container {
+  >.mat-form-field {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+}
+
+.mat-stepper-vertical {
+  margin-top: 8px;
+}
+
+.btn-delete-group {
+  margin-right: 8px;
+}
+
+.stepper-action {
+  margin-top: 1rem;
+
+  >* {
+    margin-right: 0.5rem;
+  }
+}

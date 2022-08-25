@@ -1,0 +1,12 @@
+<!-- <div class="bg-white shadow-md px-4 py-6"> -->
+    <div mat-dialog-title class="confirm-title-container">
+        <span>{{data.title}}</span>
+    </div>
+    <div mat-dialog-content class="confirm-content-container">
+        <p *ngIf="data.message !==null">{{data.message}}</p>
+    </div>
+    <div mat-dialog-actions class="confirm-action-container">
+        <button mat-button [color]="data.buttonTheme" mat-dialog-close > Batal</button>
+        <button mat-flat-button [color]="data.buttonTheme" cdkFocusInitial (click)="closeWith(true)">Ok</button>
+    </div>
+<!-- </div> -->

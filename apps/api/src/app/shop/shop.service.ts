@@ -64,6 +64,19 @@ export class ShopService {
     return this._shopRepository.findOneBy({shop_code:shop_code.trim().toLowerCase()});
   }
 
+  async checkAuthorizationShop(userLoggedIn: UserLoggedIn, shopIdentifier: string):Promise<boolean> {
+    if (userLoggedIn) {
+      const shop = await this.findOneByHashedId(shopIdentifier);
+      
+      if(shop && shop.owner_id == userLoggedIn.id){
+        return true;
+      }else{
+        return false;
+        // throw new UnauthorizedException('You do not have any right to access this store.');
+      }
+    }
+  }
+
   async findMyShops(userLoggedIn:UserLoggedIn,name: string | null, page: number, pageSize:number): Promise<ResultFindList<MyShopListItemDto>> {
     if(!name){
       name='';

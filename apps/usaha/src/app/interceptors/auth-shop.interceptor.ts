@@ -10,7 +10,7 @@ import { LocalStorageService } from '../services/local-storage.service';
 
 @Injectable()
 export class AuthShopInterceptor implements HttpInterceptor {
-
+  // Not used
   constructor(
     private _localStrg:LocalStorageService
 

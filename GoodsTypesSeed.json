@@ -1,0 +1,244 @@
+﻿{
+  "Data":[
+    {
+      "Id": 10000,
+      "Name": "Alat Tulis dan Kantor",
+      "ParentGoodsTypeId": null,
+      "Children": [
+        {
+          "Id": 10001,
+          "Name": "Buku Tulis",
+          "ParentGoodsTypeId": 10000,
+          "Children": []
+        },
+        {
+          "Id": 10002,
+          "Name": "Buku Gambar",
+          "ParentGoodsTypeId": 10000,
+          "Children": []
+        },
+        {
+          "Id": 10003,
+          "Name": "Alat Tulis",
+          "ParentGoodsTypeId": 10000,
+          "Children": []
+        },
+        {
+          "Id": 10004,
+          "Name": "Pemotong",
+          "ParentGoodsTypeId": 10000,
+          "Children": []
+        },
+        {
+          "Id": 10005,
+          "Name": "Pengukur",
+          "ParentGoodsTypeId": 10000,
+          "Children": []
+        },
+        {
+          "Id": 10006,
+          "Name": "Kertas",
+          "ParentGoodsTypeId": 10000,
+          "Children": []
+        },
+        {
+          "Id": 10007,
+          "Name": "Penutup Dokumen",
+          "ParentGoodsTypeId": 10000,
+          "Children": []
+        }
+      ]
+    },
+    {
+      "Id": 20000,
+      "Name": "Makanan Dan Minuman",
+      "ParentGoodsTypeId": null,
+      "Children": [
+        {
+          "Id": 20001,
+          "Name": "Makanan Ringan",
+          "ParentGoodsTypeId": 20000,
+          "Children": []
+        },
+        {
+          "Id": 20002,
+          "Name": "Susu",
+          "ParentGoodsTypeId": 20000,
+          "Children": []
+        },
+        {
+          "Id": 20003,
+          "Name": "Jamu",
+          "ParentGoodsTypeId": 20000,
+          "Children": []
+        },
+        {
+          "Id": 20004,
+          "Name": "Air Mineral",
+          "ParentGoodsTypeId": 20000,
+          "Children": []
+        },
+        {
+          "Id": 20005,
+          "Name": "Es Krim",
+          "ParentGoodsTypeId": 20000,
+          "Children": []
+        },
+        {
+          "Id": 20006,
+          "Name": "Kopi",
+          "ParentGoodsTypeId": 20000,
+          "Children": []
+        },
+        {
+          "Id": 20007,
+          "Name": "Minuman Kesehatan",
+          "ParentGoodsTypeId": 20000,
+          "Children": []
+        },
+        {
+          "Id": 20008,
+          "Name": "Minuman Berenergi",
+          "ParentGoodsTypeId": 20000,
+          "Children": []
+        }
+      ]
+    },
+    {
+      "Id": 30000,
+      "Name": "Bahan Pokok",
+      "ParentGoodsTypeId": null,
+      "Children": [
+        {
+          "Id": 30001,
+          "Name": "Bumbu Dapur",
+          "ParentGoodsTypeId": 30000,
+          "Children": []
+        },
+        {
+          "Id": 30002,
+          "Name": "Bahan Masak",
+          "ParentGoodsTypeId": 30000,
+          "Children": []
+        },
+        {
+          "Id": 30003,
+          "Name": "Sayuran",
+          "ParentGoodsTypeId": 30000,
+          "Children": []
+        }
+      ]
+    },
+    {
+      "Id": 40000,
+      "Name": "Kebutuhan Rumah Tangga",
+      "ParentGoodsTypeId": null,
+      "Children": [
+        {
+          "Id": 40001,
+          "Name": "Furniture",
+          "ParentGoodsTypeId": 40000,
+          "Children": []
+        },
+        {
+          "Id": 40002,
+          "Name": "Alat Kebersihan",
+          "ParentGoodsTypeId": 40000,
+          "Children": []
+        },
+        {
+          "Id": 40003,
+          "Name": "Obat-obatan",
+          "ParentGoodsTypeId": 40000,
+          "Children": []
+        },
+        {
+          "Id": 40004,
+          "Name": "Obat Nyamuk dan Tikus",
+          "ParentGoodsTypeId": 40000,
+          "Children": []
+        }
+      ]
+    },
+    {
+      "Id": 50000,
+      "Name": "Perawatan Tubuh dan Wajah",
+      "ParentGoodsTypeId": null,
+      "Children": [
+        {
+          "Id": 50001,
+          "Name": "Kosmetik",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        },
+        {
+          "Id": 50002,
+          "Name": "Perawatan Kulit Wajah",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        },
+        {
+          "Id": 50003,
+          "Name": "Perawatan Wubuh",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        },
+        {
+          "Id": 50004,
+          "Name": "Perawatan Rambut",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        },
+        {
+          "Id": 50005,
+          "Name": "Parfum",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        }
+      ]
+    },
+    {
+      "Id": 60000,
+      "Name": "Ibu dam Bayi",
+      "ParentGoodsTypeId": null,
+      "Children": [
+        {
+          "Id": 60001,
+          "Name": "Nutrisi Ibu Hamil",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        },
+        {
+          "Id": 60002,
+          "Name": "Nutrisi Bayi",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        },
+        {
+          "Id": 60003,
+          "Name": "Perlengkapan Bayi",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        },
+        {
+          "Id": 60004,
+          "Name": "Perawatan Bayi",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        },
+        {
+          "Id": 60005,
+          "Name": "Popok Bayi",
+          "ParentGoodsTypeId": 50000,
+          "Children": []
+        }
+      ]
+    },
+    {
+      "Id": 100000,
+      "Name": "Lainnya",
+      "ParentGoodsTypeId": null,
+      "Children": []
+    }
+  ]
+}

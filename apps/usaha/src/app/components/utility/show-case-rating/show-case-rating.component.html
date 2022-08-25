@@ -1,0 +1,11 @@
+<div class="rating-container">
+    <ng-container *ngFor="let star of stars">
+        <!-- <span>gg</span> -->
+        <!-- <i class="fa-solid fa-star-sharp"></i> -->
+        <!-- <i class="fa-light fa-star-sharp"></i> -->
+        <mat-icon *ngIf="star===1" >{{fullstar}}</mat-icon>
+        <mat-icon *ngIf="star === 0.5">{{halfstar}}</mat-icon>
+        <!-- <fa-icon [icon]="fullstar" *ngIf="star == 1"></fa-icon>
+        <fa-icon [icon]="halfstar" *ngIf="star == 0.5"></fa-icon> -->
+    </ng-container>
+</div>

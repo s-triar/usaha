@@ -1,0 +1,43 @@
+<div>
+    <button type="button" mat-mini-fab color="accent" *ngIf="!(isWeb$|async); else btnWeb" [disabled]="disabled" (click)="chooseImg()">
+        <!-- <fa-icon [icon]="iconImage"></fa-icon> -->
+        <mat-icon>{{iconImage}}</mat-icon>
+    </button>
+    <ng-template #btnWeb>
+        <button  mat-mini-fab color="accent" type="button" (click)="isOpen = !isOpen" [disabled]="disabled" [matMenuTriggerFor]="menu" >
+            <!-- <fa-icon [icon]="iconImage"></fa-icon> -->
+            <mat-icon>{{iconImage}}</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item type="button"  (click)="takingPict()">
+                <!-- <fa-icon [icon]="iconCamera" style="margin-right: 4px;"></fa-icon> -->
+                <mat-icon style="margin-right: 4px;">{{iconCamera}}</mat-icon>
+              <span>Ambil Gambar</span>
+            </button>
+            <button mat-menu-item type="button" (click)="chooseImg()">
+                <!-- <fa-icon [icon]="iconFileImage" style="margin-right: 4px;"></fa-icon> -->
+                <mat-icon style="margin-right: 4px;">{{iconFileImage}}</mat-icon>
+                <span>Dari Folder</span>
+              </button>
+          </mat-menu>
+        <!-- <ng-template
+        cdkConnectedOverlay
+        [cdkConnectedOverlayOrigin]="trigger"
+        [cdkConnectedOverlayOpen]="isOpen"
+        [cdkConnectedOverlayScrollStrategy]="scrollStrategy"
+        (detach)="closeMenu()"
+        >
+        <ul class="bg-white px-2 py-2 border border-gray-100 drop-shadow-md shadow-md">
+            <li class="cursor-pointer px-3 py-1 mt-1 mb-1 hover:bg-gray-200" (click)="takingPict()">Ambil Gambar</li>
+            <li class="cursor-pointer px-3 py-1 mt-1 mb-1 hover:bg-gray-200" (click)="chooseImg()">Dari Folder</li>
+        </ul>
+        </ng-template> -->
+    </ng-template>
+    <!-- <mat-menu #menuEditImage="matMenu">
+        <button mat-menu-item (click)="takingPict()" type="button"><mat-icon>camera_alt</mat-icon> Ambil Gambar</button>
+        <button mat-menu-item  (click)="chooseImg()" type="button"><mat-icon>folder</mat-icon> Dari Folder</button>
+    </mat-menu> -->
+    <input  type="file" id="img-input" #img (change)="onSelectFile($event)" multiple="false" hidden>
+</div>
+<app-camera *ngIf="isTakingPicture" (captured)="captured($event)"></app-camera>
+<!-- <app-camera-capturer *ngIf="isTakingPicture" (ImageCaptured)="cameraCapturingHandle($event)"></app-camera-capturer> -->

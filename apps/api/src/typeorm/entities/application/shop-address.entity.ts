@@ -6,7 +6,7 @@ import { Shop } from './shop.entity';
 export class ShopAddress extends Base{
     @PrimaryGeneratedColumn({unsigned:true})
     id: number;
-    @ManyToOne(() => Shop, (shop) => shop.address)
+    @ManyToOne(() => Shop, (shop) => shop.addresses)
     shop: Shop
     @Column({nullable:false})
     province:string;

@@ -48,7 +48,67 @@ export interface RegisterShopDto {
 }
 
 export interface RequestFindList{
-  name:string|null;
+  name:string;
   page:number;
   pageSize:number;
+}
+export interface RequestFindListShopEntity{
+  name:string;
+  shop_id:string;
+  page:number;
+  pageSize:number;
+}
+export interface RegisterProductGroupDto{
+  name:string;
+  description:string|null;
+  shop_id:string;
+}
+export interface RegisterProductInDto{
+  product_id:string;
+  n:number;
+  price:number;
+  from?:string|null;
+}
+export interface RegisterProductPriceDto{
+  product_id:string;
+  wholeSalePrice:number;
+  price:number;
+  minWholeSalePrice:number;
+  isAutoUseWholeSale:boolean;
+}
+
+export interface RegisterProductDto{
+  shop_id:string;
+  barcode:string;
+  name:string;
+  product_type_id:number;
+  product_group_ids:string[];
+  buy_price:number;
+  sell_price:number;
+  whole_sale_price:number;
+  is_auto_use_whole_sale_price:boolean;
+  min_auto_whole_sale_price:number;
+  current_stock:number;
+  barcode_parent:string;
+  description:string|null;
+  threshold_stock:number;
+  contain:number;
+  photo_string:string|null;
+  photo_file:File|null;
+  photo:string|null; // file name
+}
+
+export interface RegisterProductStockDto{
+  product_id:string;
+  n:number;
+  description?:string|null;
+}
+
+export interface RegisterProductPhotoDto{
+  product_id:string;
+  path:string;
+}
+export interface RegisterProductPhotoFileDto{
+  product_id:string;
+  file:File;
 }

@@ -1,0 +1,117 @@
+<mat-tab-group mat-align-tabs="center" >
+    <mat-tab label="Info">
+        <div class="form-input-container">
+            <div class="img-preview" [style.background-image]="'url(' + (url !== null ? (urlImg!==null? urlImg : url) : defaultImg) + ')'">
+                <img [src]="url !== null ? url : defaultImg" style="visibility: hidden;" width="100%"/>
+            </div>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always" >
+                <mat-label>Barcode Produk</mat-label>
+                <input readonly matInput  placeholder="Barcode Produk"  autocomplete="off" [value]="dataGoods.barcode" >
+                <button mat-icon-button matSuffix (click)="copy('Barcode produk',dataGoods.barcode)"><mat-icon>content_copy</mat-icon></button>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Nama Produk</mat-label>
+                <input readonly matInput placeholder="Nama Produk"  autocomplete="off" [value]="dataGoods.name">
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always" >
+                <mat-label>Kategori Produk</mat-label>
+                <input readonly matInput placeholder="Kategori Produk"  autocomplete="off" [value]="GoodsTypesDataShow">
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Deskripsi Produk Varian</mat-label>
+                <textarea matInput
+                readonly
+                placeholder="Deskripsi Produk" autocomplete="off"
+                MatTextareaAutosize cdkTextareaAutosize="true" cdkAutosizeMinRows="4" cdkAutosizeMaxRows="12"
+                [value]="dataGoods.description"
+                ></textarea>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Isi Produk Dengan Kemasan Yang Lebih Kecil</mat-label>
+                <input readonly autocomplete="off" matInput placeholder="Isi Produk Dengan Kemasan Yang Lebih Kecil"  type="number" style="text-align: right;" min="1" [value]="dataGoods.contain">
+            </mat-form-field>
+            <div class="mat-form-field">
+                <mat-checkbox [checked]="dataGoods.availableOnline" >Jual Online?</mat-checkbox>
+            </div>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Barcode Produk Packaging Lebih Besar</mat-label>
+                <input readonly matInput placeholder="Barcode Produk Packaging Lebih Besar"  autocomplete="off" [value]="dataGoods.parent?.id">
+            </mat-form-field>
+            <div class="group-product-container">
+                <div class="group-product-label">
+                    <mat-label>Grup Produk</mat-label>
+                </div>
+                <mat-list role="list" class="group-product-list-container">
+                    <mat-list-item role="listitem" *ngFor="let item of dataGoods.groups">
+                        <button mat-icon-button color="accent" (click)="showGroupMemberDialog(item.id)"><mat-icon >visibility</mat-icon></button>
+                        {{item.name}}
+                    </mat-list-item>
+                </mat-list>
+            </div>
+            <div class="form-action-container">
+                <button mat-raised-button color="primary" (click)="updateInfo()"><mat-icon>edit</mat-icon> Ubah Info Produk</button>
+            </div>
+        </div>
+        <div style="display: block;">
+            <!-- <canvas baseChart width="400" height="400"
+                [data]="lineChartData"
+                [options]="lineChartOptions"
+                [type]="lineChartType"
+                (chartHover)="chartHovered($event)"
+                (chartClick)="chartClicked($event)">
+            </canvas> -->
+        </div>
+    </mat-tab>
+    <mat-tab label="Harga">
+        <div class="form-input-container">
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Harga Jual Produk</mat-label>
+                <span matPrefix>Rp&nbsp;</span>
+                <app-input-currency readonly placeholder="Harga Jual Produk"  [value]="dataGoods.price"></app-input-currency>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Harga Jual Grosir Produk</mat-label>
+                <span matPrefix>Rp&nbsp;</span>
+                <app-input-currency readonly placeholder="Harga Jual Grosir Produk"  [value]="dataGoods.wholesalerPrice"></app-input-currency>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Minimal Beli Produk Untuk Grosir</mat-label>
+                <input readonly type="number" matInput placeholder="Minimal Beli Produk Untuk Grosir"  min="1" style="text-align: right;" [value]="dataGoods.wholesalerMin">
+            </mat-form-field>
+            <div class="mat-form-field">
+                <mat-checkbox  [checked]="dataGoods.isWholesalerPriceAuto">Otomatis harga grosir jika minimal terpenuhi?</mat-checkbox>
+            </div>
+            <div class="form-action-container">
+                <button mat-raised-button color="primary" (click)="updatePrice()"><mat-icon>edit</mat-icon> Ubah Harga Jual Produk</button>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Stok">
+        <div class="form-input-container">
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Harga Beli Produk Terakhir</mat-label>
+                <span matPrefix>Rp&nbsp;</span>
+                <app-input-currency readonly placeholder="Harga Beli Produk" [value]="dataGoods.buyPrice"></app-input-currency>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Harga Beli Produk Dasar</mat-label>
+                <span matPrefix>Rp&nbsp;</span>
+                <app-input-currency readonly placeholder="Harga Beli Produk" [value]="dataGoods.baseBuyPrice"></app-input-currency>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Jumlah Produk Di Dalam Stok Sekarang</mat-label>
+                <input readonly [value]="dataGoods.n" autocomplete="off" matInput placeholder="Jumlah Produk Di Dalam Stok Sekarang"  type="number" style="text-align: right;" min="0" >
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Jumlah Minimal Produk Di Dalam Stok</mat-label>
+                <input readonly [value]="dataGoods.threshold" autocomplete="off" matInput placeholder="Jumlah Minimal Produk Di Dalam Stok"  type="number" style="text-align: right;" min="0" >
+            </mat-form-field>
+            <div class="form-action-container form-action-container-wrap">
+                <button mat-raised-button color="primary" (click)="adjustStock()"><mat-icon>edit</mat-icon> Adjust Stok Produk</button>
+                <button mat-raised-button color="primary" (click)="addStock()"><mat-icon>add</mat-icon> Tambah Stok Produk</button>
+            </div>
+        </div>
+    </mat-tab>
+  </mat-tab-group>
+
+

@@ -7,6 +7,11 @@ export interface BaseDto {
   deleted_by: string | null;
 }
 
+export interface ResultFindList<T>{
+  items: T[],
+  count: number
+}
+
 export interface UserDto {
   id: string;
   username: string;
@@ -38,40 +43,45 @@ export interface MyShopListItemDto {
   phone:string;
   owned:boolean;
 }
-
-
-export interface ResultFindList<T>{
-  items: T[],
-  count: number
-}
-
-
-
 export interface ShopTypeDto {
   id:number;
   name:string;
 }
-
-
+export interface ProductTypeDto {
+  id:number;
+  name:string;
+  parent_id:number;
+}
+export interface MyShopProductGroupDto{
+  id:string;
+  name:string;
+}
 export interface ProvinceDto{
   id:string;
   name:string;
 }
-
 export interface RegencyDto{
   id:string;
   name:string;
   province_id:string;
 }
-
 export interface DistrictDto{
   id:string;
   name:string;
   regency_id:string;
 }
-
 export interface VillageDto{
   id:string;
   name:string;
   district_id:string;
+}
+export interface ProductOfMyShopListItemDto {
+  id: string;
+  shop_id: string;
+  name:string;
+  barcode:string;
+  product_type_name: string;
+  price:number;
+  whole_sale_price:number;
+  stock:number;
 }

@@ -1,0 +1,16 @@
+.confirm-title-container{
+    text-align: center;
+    font-weight: 400;
+    font-size: large;
+}
+.confirm-content-container{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    text-align: center;
+}
+.confirm-action-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    justify-items: center;
+}

@@ -72,7 +72,7 @@ const routes: Routes = [
     {
         path:'workspace/:shop_id',
         loadComponent:() => import('./modules/workspace/workspace.component').then(x=>x.WorkspaceComponent),
-        resolve:{shop_token:ShopTokenResolver},
+        resolve:{shop_id:ShopTokenResolver},
         canActivate:[AuthGuard],
         children:[
             {

@@ -16,6 +16,6 @@ export class CashierComponent implements OnInit {
 
   ngOnInit(): void {
     console.log("from workspace/cashier");
-    this._productService.getMyStoreProducts().subscribe();
+    // this._productService.getMyStoreProducts().subscribe();
   }
 }

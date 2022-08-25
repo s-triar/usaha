@@ -1,0 +1,136 @@
+<mat-stepper orientation="vertical" [linear]="true" #stepper>
+    <form [formGroup]="form" >
+        <mat-step [stepControl]="infoGroup">
+        <ng-template matStepLabel>Informasi Produk</ng-template>
+        <div formGroupName="info" class="form-input-container">
+            <div class="img-preview" [style.background-image]="'url(' + (url !== null ? (urlImg!==null? urlImg : url) : defaultImg) + ')'">
+                <img [src]="url !== null ? url : defaultImg" style="visibility: hidden;" width="100%"/>
+                <usaha-button-upload-file class="btn-upload-file" formControlName="PhotoFile" (changed)="changed($event)" ></usaha-button-upload-file>
+            </div>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always" >
+                <mat-label>Barcode Produk</mat-label>
+                <input matInput placeholder="Barcode Produk" formControlName="barcode" autocomplete="off">
+                <button matSuffix mat-icon-button color="primary" (click)="openScanner()" type="button"><mat-icon>qr_code</mat-icon> </button>
+                <mat-hint class="color-warn" *ngIf="(BarcodeProduct?.dirty || BarcodeProduct?.touched) && BarcodeProduct?.hasError('required')">Barcode harus diisi.</mat-hint>
+                <mat-hint class="color-warn" *ngIf="BarcodeProduct?.hasError('duplicateBarcodeError')">Barang dengan barcode tersebut sudah ada.</mat-hint>
+                <mat-hint class="color-warn" *ngIf="BarcodeProduct?.hasError('maxlength')">Maksimal panjang barcode 255 karakter.</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Nama Produk</mat-label>
+                <input matInput placeholder="Nama Produk" formControlName="name" autocomplete="off">
+                <mat-hint class="color-warn" *ngIf="(NameProduct?.dirty || NameProduct?.touched) && NameProduct?.hasError('required')">Nama produk varian harus diisi.</mat-hint>
+                <mat-hint class="color-warn" *ngIf="NameProduct?.hasError('maxlength')">Maksimal panjang nama produk 255 karakter.</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always" >
+                <mat-label>Kategori Produk</mat-label>
+                <mat-select formControlName="product_type_id" #selectGoodType (selectionChange)="selectGoodsType($event)">
+                        <mat-option *ngFor="let item of GoodsTypes ; let i = index" [value]="item.id" [ngStyle]="GoodsTypeIdProduct?.value !==null && i ==0 ? {'display':'none'}:{}">{{item.name}}</mat-option>
+                </mat-select>
+                <mat-hint class="color-warn" *ngIf="(GoodsTypeIdProduct?.dirty || GoodsTypeIdProduct?.touched) && GoodsTypeIdProduct?.hasError('required')">Kategori produk harus diisi.</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Deskripsi Produk Varian</mat-label>
+                <textarea matInput
+                placeholder="Deskripsi Produk" autocomplete="off"
+                MatTextareaAutosize cdkTextareaAutosize="true" cdkAutosizeMinRows="4" cdkAutosizeMaxRows="12"
+                formControlName="description"
+                ></textarea>
+                <mat-hint class="color-warn" *ngIf="DescriptionProduct?.hasError('maxlength')">Maksimal panjang deskripsi produk 255 karakter.</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Isi Produk Dengan Kemasan Yang Lebih Kecil</mat-label>
+                <input autocomplete="off" matInput placeholder="Isi Produk Dengan Kemasan Yang Lebih Kecil" formControlName="contain" type="number" style="text-align: right;" min="1" >
+                <mat-hint class="color-warn" *ngIf="(ContainProduct?.dirty || ContainProduct?.touched) && ContainProduct?.hasError('required')">Isi produk dengan kemasan yang paling kecil harus diisi.</mat-hint>
+                <mat-hint class="color-warn" *ngIf="(ContainProduct?.dirty || ContainProduct?.touched) && ContainProduct?.hasError('min')">Nilai minimal adalah 1.</mat-hint>
+            </mat-form-field>
+            <div class="mat-form-field">
+                <mat-checkbox formControlName="AvailableOnline"  >Jual Online?</mat-checkbox>
+            </div>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Barcode Produk Packaging Lebih Besar</mat-label>
+                <input matInput placeholder="Barcode Produk Packaging Lebih Besar" formControlName="barcode_parent" autocomplete="off">
+                <mat-hint class="color-warn" *ngIf="ParentBarcodeProduct?.hasError('maxlength')">Maksimal panjang nama produk 255 karakter.</mat-hint>
+            </mat-form-field>
+            <div class="group-product-container">
+                <div class="group-product-label">
+                    <mat-label>Grup Produk</mat-label>
+                </div>
+                <button mat-stroked-button color="primary" (click)="openDialogGroup()"><mat-icon>add</mat-icon>Tambah Grup Produk</button>
+                <mat-list role="list" class="group-product-list-container">
+                    <mat-list-item role="listitem" *ngFor="let item of tempSelectedGoodsGroup">
+                        <button mat-icon-button color="accent" (click)="showGroupMemberDialog(item.id)"><mat-icon >visibility</mat-icon></button>
+                        <button mat-icon-button color="warn" (click)="removeGroup(item.id)" class="btn-delete-group"><mat-icon >delete</mat-icon></button>
+                        {{item.name}}
+                    </mat-list-item>
+                </mat-list>
+            </div>
+            <div class="stepper-action">
+                <button mat-raised-button color="primary" matStepperNext [disabled]="!infoGroup.dirty || ((infoGroup.dirty || infoGroup.touched) && !infoGroup.valid)">Berikutnya</button>
+            </div>
+        </div>
+    </mat-step>
+    <mat-step [stepControl]="pricingGroup">
+        <ng-template matStepLabel>Harga</ng-template>
+        <div formGroupName="pricing" class="form-input-container">
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Harga Beli Produk</mat-label>
+                <span matPrefix>Rp&nbsp;</span>
+                <app-input-currency placeholder="Harga Beli Produk" formControlName="buy_price"></app-input-currency>
+                <mat-hint class="color-warn" *ngIf="(BuyPriceProduct?.dirty || BuyPriceProduct?.touched) && BuyPriceProduct?.hasError('required')">Harga beli produk harus diisi.</mat-hint>
+                <mat-hint class="color-warn" *ngIf="(BuyPriceProduct?.dirty || BuyPriceProduct?.touched) && BuyPriceProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Harga Jual Produk</mat-label>
+                <span matPrefix>Rp&nbsp;</span>
+                <app-input-currency placeholder="Harga Jual Produk" formControlName="sell_price" ></app-input-currency>
+                <mat-hint class="color-warn" *ngIf="(PriceProduct?.dirty || PriceProduct?.touched) && PriceProduct?.hasError('required')">Harga jual produk harus diisi.</mat-hint>
+                <mat-hint class="color-warn" *ngIf="(PriceProduct?.dirty || PriceProduct?.touched) && PriceProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Harga Jual Grosir Produk</mat-label>
+                <span matPrefix>Rp&nbsp;</span>
+                <app-input-currency placeholder="Harga Jual Grosir Produk" formControlName="whole_sale_price" ></app-input-currency>
+                <mat-hint class="color-warn" *ngIf="(WholesalerPriceProduct?.dirty || WholesalerPriceProduct?.touched) && WholesalerPriceProduct?.hasError('required')">Harga jual grosir produk harus diisi.</mat-hint>
+                <mat-hint class="color-warn" *ngIf="(WholesalerPriceProduct?.dirty || WholesalerPriceProduct?.touched) && WholesalerPriceProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Minimal Beli Produk Untuk Grosir</mat-label>
+                <input type="number" matInput placeholder="Minimal Beli Produk Untuk Grosir" formControlName="min_auto_whole_sale_price" min="1" style="text-align: right;">
+                <mat-hint class="color-warn" *ngIf="(WholesalerMinProduct?.dirty || WholesalerMinProduct?.touched) && WholesalerMinProduct?.hasError('min')">Nilai minimal adalah 1.</mat-hint>
+            </mat-form-field>
+            <div class="mat-form-field">
+                <mat-checkbox formControlName="is_auto_use_whole_sale_price">Otomatis harga grosir jika minimal terpenuhi?</mat-checkbox>
+            </div>
+            <div class="stepper-action">
+                <button mat-raised-button color="accent" matStepperPrevious>Kembali</button>
+                <button mat-raised-button color="primary" matStepperNext [disabled]="!pricingGroup.dirty || ((pricingGroup.dirty || pricingGroup.touched) && !pricingGroup.valid)">Berikutnya</button>
+            </div>
+        </div>
+    </mat-step>
+    <mat-step [stepControl]="stockGroup">
+        <ng-template matStepLabel>Stok</ng-template>
+        <div formGroupName="stock" class="form-input-container">
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Jumlah Produk Di Dalam Stok Sekarang</mat-label>
+                <input autocomplete="off" matInput placeholder="Jumlah Produk Di Dalam Stok Sekarang" formControlName="current_stock" type="number" style="text-align: right;" min="0" >
+                <mat-hint class="color-warn" *ngIf="(NProduct?.dirty || NProduct?.touched) && NProduct?.hasError('required')">Jumlah produk di dalam stok sekarang harus diisi.</mat-hint>
+                <mat-hint class="color-warn" *ngIf="(NProduct?.dirty || NProduct?.touched) && NProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Jumlah Minimal Produk Di Dalam Stok</mat-label>
+                <input autocomplete="off" matInput placeholder="Jumlah Minimal Produk Di Dalam Stok" formControlName="threshold_stock" type="number" style="text-align: right;" min="0" >
+                <mat-hint class="color-warn" *ngIf="(ThresholdProduct?.dirty || ThresholdProduct?.touched) && ThresholdProduct?.hasError('required')">Jumlah minimal produk di dalam stok harus diisi.</mat-hint>
+                <mat-hint class="color-warn" *ngIf="(ThresholdProduct?.dirty || ThresholdProduct?.touched) && ThresholdProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
+            </mat-form-field>
+        </div>
+        
+        <div class="stepper-action">
+            <button mat-raised-button color="accent" matStepperPrevious>Kembali</button>
+            <button mat-raised-button color="accent" (click)="stepper.reset()" [disabled]="!(form.dirty || form.touched)">Reset</button>
+            <button mat-raised-button color="primary" (click)="submit()" [disabled]="!form.dirty || ((form.dirty || form.touched) && !form.valid)">Submit</button>
+            <!-- [disabled]="!form.dirty || ((form.dirty || form.touched) && !form.valid)" -->
+        </div>
+    </mat-step>
+    </form>
+    
+</mat-stepper>

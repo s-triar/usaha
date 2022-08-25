@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import { AuthShopStateService } from '../../services/auth-shop-state.service';
+import { ShopStateService } from '../../services/shop-state.service';
 
 @Component({
   selector: 'usaha-workspace',
@@ -12,23 +12,22 @@ import { AuthShopStateService } from '../../services/auth-shop-state.service';
     RouterModule,
     MatSidenavModule
   ],
+  providers:[ShopStateService],
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.css'],
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
   constructor(
     private _route:ActivatedRoute,
-    private _shopAuthService:AuthShopStateService
+    private _shopStateService:ShopStateService
   ) {}
   ngOnDestroy(): void {
-    this._shopAuthService.loggedOut();
+    this._shopStateService.current_shop$.next('');
   }
 
   ngOnInit(): void {
-    
-    const shop_token = this._route.snapshot.data['shop_token'].shop_access_token; 
-    this._shopAuthService.loggedIn(shop_token);
-    console.log("from workspace");
-    
+    const shop_id = this._route.snapshot.data['shop_id']; 
+    this._shopStateService.current_shop$.next(shop_id);
   }
+  
 }

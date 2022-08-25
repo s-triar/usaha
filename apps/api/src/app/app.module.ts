@@ -7,20 +7,24 @@ import { environment } from '../environments/environment';
 import { auth_entities } from '../typeorm/entities/auth';
 import { UserModule } from './user/user.module';
 import { application_entities } from '../typeorm/entities/application';
-// import { ShopModule } from './shop/shop.module';
-// import { ShopAuthModule } from './auth/shop-auth.module';
 import { AuthUserModule } from './auth-user/auth-user.module';
 import { ShopModule } from './shop/shop.module';
-import { ShopAuthModule } from './auth-shop/shop-auth.module';
 import { WilayahAdministrativeModule } from './wilayah-administrative/wilayah-administrative.module';
 import { wilayah_administrative_entities } from '../typeorm/entities/wilayah';
 import { ShopTypeModule } from './shop-type/shop-type.module';
 import { ProductModule } from './product/product.module';
+import { ProductTypeModule } from './product-type/product-type.module';
+import { ProductInModule } from './product-in/product-in.module';
+import { ProductPriceModule } from './product-price/product-price.module';
+import { ProductGroupModule } from './product-group/product-group.module';
+import { ProductStockModule } from './product-stock/product-stock.module';
+import { HashIdService } from './hash-id/hash-id.service';
+import { ProductPhotoModule } from './product-photo/product-photo.module';
 
 @Module({
   imports: [
     AuthUserModule,
-    ShopAuthModule,
+    // ShopAuthModule,
 
     UserModule,
     // CurrentUserModule,
@@ -48,6 +52,12 @@ import { ProductModule } from './product/product.module';
     ShopTypeModule,
     WilayahAdministrativeModule,
     ProductModule,
+    ProductTypeModule,
+    ProductInModule,
+    ProductPriceModule,
+    ProductGroupModule,
+    ProductStockModule,
+    ProductPhotoModule
     // TypeOrmModule.forRoot({
     //   name:'auth_db',
     //   type: 'mysql',
@@ -61,6 +71,6 @@ import { ProductModule } from './product/product.module';
     // }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, HashIdService],
 })
 export class AppModule {}

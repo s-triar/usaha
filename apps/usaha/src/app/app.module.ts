@@ -9,7 +9,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { BackService } from './directives/back/back.service';
-import { AuthShopInterceptor } from './interceptors/auth-shop.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +22,7 @@ import { AuthShopInterceptor } from './interceptors/auth-shop.interceptor';
   providers: [
     BackService,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthShopInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: AuthShopInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

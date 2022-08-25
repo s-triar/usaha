@@ -1,0 +1,35 @@
+<div class="scanner-dialog-content">
+    <div mat-dialog-content>
+        <mat-form-field appearance="fill" >
+            <mat-select   (valueChange)="onDeviceSelectChange($event)" #cameras>
+                <mat-option *ngIf="hasDevices" value="">Pilih kamera</mat-option>
+                <mat-option *ngIf="!hasDevices" value="">Tidak ada perangkat kamera</mat-option>
+                <mat-option *ngIf="(hasPermission ===undefined || hasPermission === false) && hasDevices === true" value="">Izinkan penggunaan kamera untuk memulai scanning</mat-option>
+                <mat-option *ngFor="let device of availableDevices" [value]="device.deviceId">{{device.label}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <zxing-scanner
+            #scanner
+            [enable]="scannerEnabled"
+            [formats]="allowedFormats"
+            [torch]="torchEnabled" 
+            [tryHarder]="tryHarder"
+            [device]="deviceCurrent"
+            (deviceChange)="onDeviceChange($event)"
+            (permissionResponse)="onHasPermission($event)"
+            (camerasFound)="camerasFoundHandler($event)"
+            (camerasNotFound)="camerasNotFoundHandler($event)"
+            (scanSuccess)="scanSuccessHandler($event)"
+            (scanError)="scanErrorHandler($event)"
+            (scanFailure)="scanFailureHandler($event)"
+            (scanComplete)="scanCompleteHandler($event)"
+        ></zxing-scanner>
+        <div *ngIf="valueScanned !==undefined && valueScanned !== '' && isCompleted ===true">
+            <h3>Hasil: {{valueScanned}}</h3>
+        </div>
+    </div>
+    <div mat-dialog-actions fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="0px" fxFlexFill style="width:100%;">
+        <button mat-stroked-button (click)="scanAgain()" color="accent" *ngIf="valueScanned !==undefined && valueScanned !== '' && isCompleted ===true">Scan Lagi</button>
+        <button mat-raised-button (click)="closeScannerDialog()" color="primary">Tutup</button>
+    </div>
+</div>

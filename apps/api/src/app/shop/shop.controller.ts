@@ -6,23 +6,23 @@ import {
   Query,
   UseGuards,
   Request,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   MyShopListItemDto,
   RegisterShopDto,
   RequestFindList,
   ResultFindList,
-  ShopTokenDto,
+  // ShopTokenDto,
 } from '@usaha/api-interfaces';
-import { ShopAuthService } from '../auth-shop/shop-auth.service';
 import { AuthUserGuard } from '../auth-user/auth-user.guard';
+// import { ShopInterceptorInterceptor } from '../shop-interceptor/shop-interceptor.interceptor';
 import { ShopService } from './shop.service';
 
 @Controller('shop')
 export class ShopController {
   constructor(
-    private _shopService: ShopService,
-    private _shopAuthService: ShopAuthService
+    private _shopService: ShopService
   ) {}
 
   @UseGuards(AuthUserGuard)
@@ -30,9 +30,9 @@ export class ShopController {
   async login(
     @Body('identifier') identifier: string,
     @Request() req
-  ): Promise<ShopTokenDto | null> {
+  ): Promise<boolean> {
     const user = req.user;
-    return await this._shopAuthService.login(user, identifier);
+    return await this._shopService.checkAuthorizationShop(user, identifier);
   }
 
   @UseGuards(AuthUserGuard)
@@ -55,9 +55,9 @@ export class ShopController {
   }
 
   @UseGuards(AuthUserGuard)
-  @Post('find-my-shops')
+  @Get('find-my-shops')
   async findMyShops(
-    @Body() data: RequestFindList,
+    @Query() data: RequestFindList,
     @Request() req
   ): Promise<ResultFindList<MyShopListItemDto>> {
     const user = req.user;

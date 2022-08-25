@@ -1,0 +1,16 @@
+<div style="width: 100vw;height: 100vh;" >
+    
+    <video #video class="video-take-pic"  [width]="innerWidth" [height]="innerHeight" autoplay></video>
+    <div *ngIf="isCameraReady" [class]="'panel-button-cam '+orientation">
+        <button mat-fab color="primary" (click)="capture()">
+            <!-- <fa-icon [icon]="iconCamera"></fa-icon> -->
+            <mat-icon>{{iconCamera}}</mat-icon>
+        </button>
+    </div>
+    <canvas style="display:none;" #canvas id="canvas" [width]="canvasWidth" [height]="canvasHeight"></canvas>
+     <!-- <ul>
+        <li *ngFor="let c of captures">
+            <img src="{{ c }}" height="50" />
+        </li>
+    </ul> -->
+</div>

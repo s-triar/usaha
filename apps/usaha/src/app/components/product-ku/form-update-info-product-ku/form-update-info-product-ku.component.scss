@@ -1,0 +1,13 @@
+.group-product-container{
+  margin: 1rem;
+  >.group-product-list-container{
+    max-height: 180px;
+    overflow-y: auto;
+  }
+}
+.group-product-label{
+  margin-bottom: 10px;
+}
+.btn-delete-group{
+  margin-right: 8px;
+}

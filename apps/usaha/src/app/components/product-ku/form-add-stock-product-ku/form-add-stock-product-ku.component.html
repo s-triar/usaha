@@ -1,0 +1,26 @@
+<form [formGroup]="form" class="form-input-container">
+    <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+        <mat-label>Banyak Barang Masuk</mat-label>
+        <input autocomplete="off" matInput placeholder="Banyak Barang Masuk" formControlName="n" type="number" style="text-align: right;" min="1" >
+        <mat-hint class="color-warn" *ngIf="(N?.dirty || N?.touched) && N?.hasError('required')">Banyak barang masuk harus diisi.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(N?.dirty || N?.touched) && N?.hasError('min')">Nilai minimal adalah 1.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="From?.hasError('maxlength')">Maksimal panjang nama grup produk 255 karakter.</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+        <mat-label>Harga Beli Per Item</mat-label>
+        <span matPrefix>Rp&nbsp;</span>
+        <app-input-currency placeholder="Harga Beli Perr Item" formControlName="price" ></app-input-currency>
+        <mat-hint class="color-warn" *ngIf="(Price?.dirty || Price?.touched) && Price?.hasError('required')">Harga beli per item harus diisi.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(Price?.dirty || Price?.touched) && Price?.hasError('min')">Nilai minimal adalah 1.</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+        <mat-label>Dari</mat-label>
+        <input autocomplete="off" matInput placeholder="Dari" formControlName="from" type="text" >
+        <mat-hint class="color-warn" *ngIf="(From?.dirty || From?.touched) && From?.hasError('min')">Nilai minimal adalah 1.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="From?.hasError('maxlength')">Maksimal panjang nama suplier 255 karakter.</mat-hint>
+    </mat-form-field>
+    <div class="form-action-container">
+        <button mat-button color="warn" (click)="cancel()" type="button">Batal</button>
+        <button mat-raised-button color="primary" (click)="submit()" [disabled]="!form.dirty || ((form.dirty || form.touched) && !form.valid)">Submit</button>
+    </div>
+</form>
