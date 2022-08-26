@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PopUpConfirmationService } from './pop-up-confirmation.service';
+// import { PopUpConfirmationService } from './pop-up-confirmation.service';
 
 export type ConfirmationDialogType = {
   title: string;
@@ -11,7 +11,7 @@ export type ConfirmationDialogType = {
 };
 
 @Component({
-  selector: 'app-pop-up-confirmation',
+  selector: 'usaha-pop-up-confirmation',
   templateUrl: './pop-up-confirmation.component.html',
   styleUrls: ['./pop-up-confirmation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

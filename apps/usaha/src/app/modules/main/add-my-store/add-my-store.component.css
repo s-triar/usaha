@@ -17,3 +17,18 @@
     width: 100%;
     margin-bottom: 0.25rem;
 }
+
+.img-preview{
+    max-height: 480px;
+    background-size: cover;
+    position:relative;
+    margin-left: auto;
+    margin-right: auto;
+    background-position: center;
+}
+
+ .img-preview > .btn-upload-file{
+         position: absolute;
+         right: 1rem;
+         bottom: -1rem;
+     }

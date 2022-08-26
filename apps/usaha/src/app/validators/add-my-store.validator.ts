@@ -1,6 +1,6 @@
 import { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import { debounceTime, map, Observable, switchMap, take } from 'rxjs';
-import { ShopService } from '../../../services/shop.service';
+import { ShopService } from '../services/shop.service';
 
 
 export class AddMyStoreValidator{

@@ -2,14 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PopUpNotifService } from './pop-up-notif.service';
+// import { PopUpNotifService } from './pop-up-notif.service';
 export type NotifDialogType = {
   type: 'success'|'error'|'warning'|'info';
   title: string;
   message: string|null;
 };
 @Component({
-  selector: 'app-pop-up-notif',
+  selector: 'usaha-pop-up-notif',
   templateUrl: './pop-up-notif.component.html',
   styleUrls: ['./pop-up-notif.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

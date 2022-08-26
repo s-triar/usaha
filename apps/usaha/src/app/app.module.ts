@@ -9,6 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { BackService } from './directives/back/back.service';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,6 +19,7 @@ import { BackService } from './directives/back/back.service';
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
+    MatDialogModule
   ],
   providers: [
     BackService,

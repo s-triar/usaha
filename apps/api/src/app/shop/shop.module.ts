@@ -1,16 +1,24 @@
 import { Module } from '@nestjs/common';
+import { MulterModule } from '@nestjs/platform-express';
 // import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Shop, ShopAddress } from '../../typeorm/entities/application';
+import { Shop } from '../../typeorm/entities/application';
 import { AuthUserModule } from '../auth-user/auth-user.module';
 import { HashIdService } from '../hash-id/hash-id.service';
+import { ShopAddressModule } from '../shop-address/shop-address.module';
+import { ShopPhotoModule } from '../shop-photo/shop-photo.module';
 import { ShopController } from './shop.controller';
 import { ShopService } from './shop.service';
 
 @Module({
     imports:[
-        TypeOrmModule.forFeature([Shop, ShopAddress]),
+        TypeOrmModule.forFeature([Shop]),
         AuthUserModule,
+        MulterModule.register({
+            dest: './assets/uploads/shop',
+        }),
+        ShopPhotoModule,
+        ShopAddressModule
     ],
     controllers:[
         ShopController

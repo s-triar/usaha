@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 import { User } from '../auth';
 import { Base } from '../base.entity';
 import { ShopAddress } from './shop-address.entity';
+import { ShopPhoto } from './shop-photo.entity';
 import { ShopType } from './shop-type.entity';
 
 @Entity({name:'shops'})
@@ -14,8 +15,6 @@ export class Shop extends Base{
     name:string;
     @Column({nullable:true})
     email?:string;
-    @Column({nullable:true})
-    photo?:string;
     @Column({nullable:false})
     phone:string;
     @ManyToOne(()=>ShopType,{cascade:true})
@@ -30,6 +29,8 @@ export class Shop extends Base{
     owner?: User;
     @Column({nullable:false,unsigned:true})
     owner_id:number;
+    @OneToMany(() => ShopPhoto, (shop_photo) => shop_photo.shop)
+    shop_photos?:ShopPhoto[];
     // @ManyToMany(type=>User,{cascade:true})
     // @JoinTable()
     // employees: User[];

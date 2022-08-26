@@ -3,53 +3,120 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ResultFindList, MyShopListItemDto, RegisterShopDto, UserLoggedIn } from '@usaha/api-interfaces';
-import { Like, Repository } from 'typeorm';
-import { Shop, ShopAddress, ShopType } from '../../typeorm/entities/application';
+import { ResultFindList, MyShopListItemDto, RegisterShopDto, UserLoggedIn, RegisterShopPhotoDto, RegisterShopAddressDto } from '@usaha/api-interfaces';
+import { DataSource, Like, Repository } from 'typeorm';
+import { Shop } from '../../typeorm/entities/application';
 // import { CURRENT_SHOP, RequestWithShop } from '../auth/current-shop.module';
 import { HashIdService } from '../hash-id/hash-id.service';
+import { ShopAddressService } from '../shop-address/shop-address.service';
+import { ShopPhotoService } from '../shop-photo/shop-photo.service';
 
 @Injectable()
 export class ShopService {
   constructor(
     @InjectRepository(Shop) private _shopRepository: Repository<Shop>,
-    @InjectRepository(ShopAddress) private _shopAddressRepository: Repository<ShopAddress>,
-    private _hasher: HashIdService
+    private _hasher: HashIdService,
+    private _dataSource: DataSource,
+    private _shopPhotoService: ShopPhotoService,
+    private _shopAddressService: ShopAddressService
   ) {}
 
-  async create(userLoggedIn:UserLoggedIn, shop: RegisterShopDto) {
+  async createTransaction(userLoggedIn:UserLoggedIn, shop: RegisterShopDto, photo_data: RegisterShopPhotoDto):Promise<void> {
+    if (!userLoggedIn) {
+      throw new UnprocessableEntityException(
+        'Need to login to register a shop'
+      );
+    }
+    
+
+    const queryRunner = this._dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let error=null;
+    try {
+      const candidate: Shop = {
+        name:shop.name,
+        phone:shop.phone,
+        shop_code:shop.shop_code,
+        email:shop.email,
+        shop_type_id:shop.shop_type_id,
+        id: 0,
+        created_at: new Date(),
+        created_by_id: userLoggedIn.id,
+        owner_id: userLoggedIn.id,
+      };
+      const new_shop = await queryRunner.manager.getRepository(Shop).save<Shop>(candidate);
+
+      const new_shop_id_hashed = this._hasher.encrypt(new_shop.id);
+      
+      const addressTemp:RegisterShopAddressDto={
+        province:shop.province,
+        city:shop.city,
+        district:shop.district,
+        village:shop.village,
+        street:shop.street,
+        postal_code:shop.postal_code,
+        geo_map_location:shop.geo_map_location,
+        shop_id:new_shop_id_hashed
+      };
+      await this._shopAddressService.createTransaction(userLoggedIn,addressTemp, queryRunner);
+  
+      photo_data.shop_id = new_shop_id_hashed;
+      await this._shopPhotoService.createTransaction(userLoggedIn, photo_data, queryRunner);
+      
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      // since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+      error = err;
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
+    if(error){
+      throw error;
+    }
+  }
+
+
+  async create(userLoggedIn:UserLoggedIn, shop: RegisterShopDto, photo_data: RegisterShopPhotoDto):Promise<void> {
     
     if (!userLoggedIn) {
       throw new UnprocessableEntityException(
         'Need to login to register a shop'
       );
     }
-    const {address, ...temp} = shop;
-    
-    
     const candidate: Shop = {
-      ...temp,
+      name:shop.name,
+      phone:shop.phone,
+      shop_code:shop.shop_code,
+      email:shop.email,
+      shop_type_id:shop.shop_type_id,
       id: 0,
       created_at: new Date(),
       created_by_id: userLoggedIn.id,
       owner_id: userLoggedIn.id,
     };
     const new_shop = await this._shopRepository.save(candidate);
-    const addressTemp:ShopAddress={
-      id:0,
-      province:address.province,
-      city:address.city,
-      district:address.district,
-      village:address.village,
-      street:address.street,
-      postal_code:address.postal_code,
-      geo_map_location:address.geo_map_location,
-      created_at: new Date(),
-      created_by_id: userLoggedIn.id,
-      shop:new_shop
+    // const new_shop_address = await this._shopAddressRepository.save(addressTemp);
+    const new_shop_id_hashed = this._hasher.encrypt(new_shop.id);
+
+    const addressTemp:RegisterShopAddressDto={
+      province:shop.province,
+      city:shop.city,
+      district:shop.district,
+      village:shop.village,
+      street:shop.street,
+      postal_code:shop.postal_code,
+      geo_map_location:shop.geo_map_location,
+      shop_id:new_shop_id_hashed
     };
-    const new_shop_address = await this._shopAddressRepository.save(addressTemp);
-    return await this._hasher.encrypt(new_shop.id);
+    await this._shopAddressService.create(userLoggedIn,addressTemp);
+
+    photo_data.shop_id = new_shop_id_hashed;
+    await this._shopPhotoService.create(userLoggedIn, photo_data);
+
   }
 
   findOneByHashedId(id: string): Promise<Shop> {

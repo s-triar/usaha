@@ -39,5 +39,5 @@
     </mat-menu> -->
     <input  type="file" id="img-input" #img (change)="onSelectFile($event)" multiple="false" hidden>
 </div>
-<app-camera *ngIf="isTakingPicture" (captured)="captured($event)"></app-camera>
+<usaha-camera *ngIf="isTakingPicture" (captured)="captured($event)"></usaha-camera>
 <!-- <app-camera-capturer *ngIf="isTakingPicture" (ImageCaptured)="cameraCapturingHandle($event)"></app-camera-capturer> -->

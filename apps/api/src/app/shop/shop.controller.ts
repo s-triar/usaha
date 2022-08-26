@@ -7,10 +7,15 @@ import {
   UseGuards,
   Request,
   UseInterceptors,
+  UploadedFile,
+  ParseFilePipeBuilder,
+  HttpStatus,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   MyShopListItemDto,
   RegisterShopDto,
+  RegisterShopPhotoDto,
   RequestFindList,
   ResultFindList,
   // ShopTokenDto,
@@ -18,6 +23,11 @@ import {
 import { AuthUserGuard } from '../auth-user/auth-user.guard';
 // import { ShopInterceptorInterceptor } from '../shop-interceptor/shop-interceptor.interceptor';
 import { ShopService } from './shop.service';
+import { v4 as uuid } from 'uuid';
+import { extname } from 'path';
+import { diskStorage } from 'multer';
+import { Express } from 'express';
+
 
 @Controller('shop')
 export class ShopController {
@@ -45,13 +55,39 @@ export class ShopController {
   }
 
   @UseGuards(AuthUserGuard)
+  @UseInterceptors(FileInterceptor('photo_file',{preservePath:true, storage:diskStorage({
+    destination:'./assets/uploads/shop',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    filename: (req: any, file: any, cb: any) => {
+        cb(null, `shop-${uuid()}${extname(file.originalname)}`);
+    },
+  })}))
   @Post('register-shop')
   async registerShop(
     @Body() data: RegisterShopDto,
-    @Request() req
+    @Request() req,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+      .addFileTypeValidator({
+        fileType: 'jpeg',
+      })
+      .addMaxSizeValidator({
+        maxSize: 200000
+      })
+      .build({
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+      }),
+  )
+  file: Express.Multer.File
   ): Promise<void> {
+    const photo_data:RegisterShopPhotoDto={
+      path: file.filename,
+      shop_id:''
+    };
+    console.log(photo_data);
+    
     const user = req.user;
-    await this._shopService.create(user, data);
+    await this._shopService.createTransaction(user, data, photo_data);
   }
 
   @UseGuards(AuthUserGuard)

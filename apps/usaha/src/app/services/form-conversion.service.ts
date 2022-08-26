@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+// import { CurrencyPipe } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { HttpParams } from '@angular/common/http';
 export class FormConversionService {
 
 
-  constructor() { }
+  constructor() {}
 
 
     public camelize(text: string): string {
@@ -16,6 +16,7 @@ export class FormConversionService {
       return text.substring(0, 1) + text.substring(1).toLowerCase();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public convertModelToFormData(model: any, parentKey: string|null, carryFormData: FormData|null): FormData {
         const formData = carryFormData || new FormData();
         let index = 0;
@@ -54,21 +55,26 @@ export class FormConversionService {
         }
         return formData;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private isArray(val: any): boolean {
         const toString = ({}).toString;
         return toString.call(val) === '[object Array]';
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private isObject(val: any): boolean {
         return !this.isArray(val) && typeof val === 'object' && !!val;
     }
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    convertModelToHttpParams(obj: any): HttpParams {
         return this.addToHttpParams(new HttpParams(), obj, null);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       private addToHttpParams(params: HttpParams, obj: any, prefix: string|null): HttpParams {
         for (const p in obj) {
-          if (obj.hasOwnProperty(p)) {
+          if(Object.prototype.hasOwnProperty.call(obj, p)){
+          // if (obj.hasOwnProperty(p)) {
             let k = p;
             if (prefix) {
               if (p.match(/^-{0,1}\d+$/)) {

@@ -20,6 +20,8 @@ import { ProductGroupModule } from './product-group/product-group.module';
 import { ProductStockModule } from './product-stock/product-stock.module';
 import { HashIdService } from './hash-id/hash-id.service';
 import { ProductPhotoModule } from './product-photo/product-photo.module';
+import { ShopAddressModule } from './shop-address/shop-address.module';
+import { ShopPhotoModule } from './shop-photo/shop-photo.module';
 
 @Module({
   imports: [
@@ -57,7 +59,9 @@ import { ProductPhotoModule } from './product-photo/product-photo.module';
     ProductPriceModule,
     ProductGroupModule,
     ProductStockModule,
-    ProductPhotoModule
+    ProductPhotoModule,
+    ShopAddressModule,
+    ShopPhotoModule,
     // TypeOrmModule.forRoot({
     //   name:'auth_db',
     //   type: 'mysql',

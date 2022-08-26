@@ -28,6 +28,7 @@ export interface LoginUserDto {
 }
 
 export interface RegisterShopAddressDto {
+  shop_id:string;
   province: string;
   city: string;
   district: string;
@@ -42,11 +43,22 @@ export interface RegisterShopDto {
   name: string;
   shop_type_id:number;
   email?: string;
-  photo?: string;
+  photo_string:string|null;
+  photo_file:File|null;
+  photo:string|null; // file name
   phone: string;
-  address: RegisterShopAddressDto;
+  province: string;
+  city: string;
+  district: string;
+  village: string;
+  street: string;
+  postal_code: string;
+  geo_map_location?: string | null;
 }
-
+export interface RegisterShopPhotoDto{
+  shop_id:string;
+  path:string;
+}
 export interface RequestFindList{
   name:string;
   page:number;

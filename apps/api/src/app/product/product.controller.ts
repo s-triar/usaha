@@ -27,7 +27,7 @@ import { ShopInterceptorInterceptor } from '../shop-interceptor/shop-interceptor
 import { ProductService } from './product.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
-import { diskStorage, Multer } from 'multer';
+import { diskStorage } from 'multer';
 import { v4 as uuid } from 'uuid';
 import { extname } from 'path';
 
@@ -69,8 +69,9 @@ export class ProductController {
   @UseGuards(AuthUserGuard)
   @UseInterceptors(ShopInterceptorInterceptor)
   @UseInterceptors(FileInterceptor('photo_file',{preservePath:true, storage:diskStorage({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filename: (req: any, file: any, cb: any) => {
-        cb(null, `${uuid()}${extname(file.originalname)}`);
+        cb(null, `product-${uuid()}${extname(file.originalname)}`);
     },
   })}))
   @Post('register-product')

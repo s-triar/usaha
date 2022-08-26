@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ProductOfMyShopListItemDto, RegisterProductDto, RequestFindList, ResultFindList } from '@usaha/api-interfaces';
 import { Observable } from 'rxjs';
+import { FormConversionService } from './form-conversion.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,8 @@ import { Observable } from 'rxjs';
 export class ProductService {
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private convertFormData: FormConversionService
   ) { }
 
   getMyStoreProducts(shop_id:string, data:RequestFindList):Observable<ResultFindList<ProductOfMyShopListItemDto>>{
@@ -20,7 +22,8 @@ export class ProductService {
   }
 
   addProduct(data: RegisterProductDto):Observable<void>{
-    return this.http.post<void>('/api/product/register-product',data);
+    const formData = this.convertFormData.convertModelToFormData(data, null, null);
+    return this.http.post<void>('/api/product/register-product',formData);
   }
 
   checkDuplicateBarcode(shop_id: string, barcode:string):Observable<boolean>{

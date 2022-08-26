@@ -9,7 +9,7 @@ import { BarcodeFormat } from '@zxing/browser';
 import { ZXingScannerComponent, ZXingScannerModule } from '@zxing/ngx-scanner';
 
 @Component({
-  selector: 'app-scanner-dialog',
+  selector: 'usaha-scanner-dialog',
   templateUrl: './scanner-dialog.component.html',
   styleUrls: ['./scanner-dialog.component.scss'],
   standalone: true,
