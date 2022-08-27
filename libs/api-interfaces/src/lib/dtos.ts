@@ -39,9 +39,11 @@ export interface MyShopListItemDto {
   id: string;
   shop_code: string;
   shop_type_name: string;
+  photo:string;
   name:string;
   phone:string;
   owned:boolean;
+  address:string;
 }
 export interface ShopTypeDto {
   id:number;
@@ -55,6 +57,11 @@ export interface ProductTypeDto {
 export interface MyShopProductGroupDto{
   id:string;
   name:string;
+}
+export interface MemberProductGroupDto{
+  id:string;
+  name:string;
+  barcode:string;
 }
 export interface ProvinceDto{
   id:string;

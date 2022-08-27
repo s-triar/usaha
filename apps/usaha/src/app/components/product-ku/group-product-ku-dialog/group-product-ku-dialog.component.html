@@ -3,7 +3,7 @@
     <form class="w-full" [formGroup]="form" >
       <mat-form-field appearance="outline">
         <mat-label>Cari Grup</mat-label>
-        <input matInput placeholder="Cari Grup" formControlName="Search" class="w-full h-full">
+        <input matInput placeholder="Cari Grup" formControlName="name" class="w-full h-full">
       </mat-form-field>
     </form>
     <button mat-raised-button color="primary" (click)="openDialogAddGroup()"><mat-icon>add</mat-icon>Tambah Grup</button>
@@ -30,10 +30,11 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="row-top"></tr>
     </table>
   </div>
-  <app-pagination
-    (pageSelectedChanged)="pageSelectedChanged($event)"
-    (nPageChanged)="paginationNChanged($event)"
-    ></app-pagination>
+  <usaha-pagination-simple
+  #pagination
+  (pageSelectedChanged)="pageSelectedChange($event)"
+  (nPageChanged)="nPageChange($event)"
+    ></usaha-pagination-simple>
   <div mat-dialog-actions fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="0px" fxFlexFill style="width:100%;">
       <button mat-raised-button color="primary" (click)="close()">Selesai</button>
   </div>

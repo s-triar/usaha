@@ -14,9 +14,7 @@ import { ShopService } from './shop.service';
     imports:[
         TypeOrmModule.forFeature([Shop]),
         AuthUserModule,
-        MulterModule.register({
-            dest: './assets/uploads/shop',
-        }),
+        MulterModule.register(),
         ShopPhotoModule,
         ShopAddressModule
     ],

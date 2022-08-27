@@ -1,2 +1,26 @@
-<p>workspace works!</p>
-<router-outlet></router-outlet>
+<mat-drawer-container class="drawer-workspace-container" hasBackdrop="false">
+    <mat-drawer #drawer mode="push" class="drawer-workspace">
+        <mat-toolbar color="primary" class="toolbar-drawer-workspace">
+            <button mat-icon-button usahaBack [replaceUrl]="true" backLink="my-stores">
+                <mat-icon>home</mat-icon>
+            </button>
+            <span>Workspace</span>
+            <button mat-icon-button (click)="drawer.toggle()" cdkFocusInitial>
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar>
+        
+        <mat-nav-list>
+            <a mat-list-item [routerLink]="[item.path]" *ngFor="let item of drawerMenu"> <mat-icon style="margin-right: 0.5em;">{{item.icon}}</mat-icon> {{ item.name }} </a>
+         </mat-nav-list>
+    </mat-drawer>
+    <mat-drawer-content>
+        <mat-toolbar color="primary">
+            <button mat-icon-button (click)="drawer.toggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <span style="margin-left: 1em;">{{title$ | async}}</span>
+        </mat-toolbar>
+        <router-outlet></router-outlet>
+    </mat-drawer-content>
+  </mat-drawer-container>

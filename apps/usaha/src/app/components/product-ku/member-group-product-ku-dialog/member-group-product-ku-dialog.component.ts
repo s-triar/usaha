@@ -7,10 +7,11 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angu
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
+import { MemberProductGroupDto, ResultFindList } from '@usaha/api-interfaces';
 import { debounceTime, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
-import { currentPageDescription } from 'src/app/application/types';
-import { MyGoodsGroupsListMemberItemDto } from 'src/app/domain/backend/Dtos';
-import { PaginationComponent } from 'src/app/ui/components/pagination/pagination/pagination.component';
+import { ProductService } from '../../../services/product.service';
+import { currentPageDescription, PageNumberChangedEvent, PageSizeChangedEvent, PaginationSimpleComponent } from '../../pagination/pagination-simple/pagination-simple.component';
+
 
 @Component({
   templateUrl: './member-group-product-ku-dialog.component.html',
@@ -24,32 +25,31 @@ import { PaginationComponent } from 'src/app/ui/components/pagination/pagination
     MatDialogModule,
     MatInputModule,
     MatFormFieldModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    PaginationSimpleComponent
   ]
 })
 export class MemberGroupProductKuDialogComponent implements OnInit {
-  @ViewChild(PaginationComponent, {static: true}) pagination!: PaginationComponent;
-  displayedColumns: string[] = ['name'];
-  form: FormGroup = this.fb.group({
-    Search: [''],
+  @ViewChild(PaginationSimpleComponent, {static: true}) pagination!: PaginationSimpleComponent;
+  displayedColumns: string[] = ['barcode','name'];
+  form: FormGroup = this.fb.nonNullable.group({
+    name: this.fb.nonNullable.control(''),
+    pageSize: this.fb.nonNullable.control(6),
+    page: this.fb.nonNullable.control(1)
   });
-  memberList: MyGoodsGroupsListMemberItemDto[] = [];
-  pages: number[] = [1];
-  currentPage: currentPageDescription = {
-    isCurrentPageStartPage: true,
-    isCurrentPageLastPage: true
-  };
+  memberList: MemberProductGroupDto[] = [];
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<MemberGroupProductKuDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public members: MyGoodsGroupsListMemberItemDto[],
+    @Inject(MAT_DIALOG_DATA) public product_group_id: string,
     private dialog: MatDialog,
+    private _productService: ProductService
   ) { }
 
   ngOnInit(): void {
     this.searchGroupProduct();
-    this.form.controls.Search.setValue('', {onlySelf: true});
-    this.form.controls.Search.updateValueAndValidity();
+    this.form.controls['name'].setValue('', {onlySelf: true});
+    this.form.controls['name'].updateValueAndValidity();
   }
   searchGroupProduct(): void{
     this.form.valueChanges.pipe(
@@ -58,13 +58,21 @@ export class MemberGroupProductKuDialogComponent implements OnInit {
       switchMap(x => this.searchMemberForShow())
     )
     .subscribe(x => {
-      this.memberList = x;
+      this.memberList = x.items;
     });
   }
-  searchMemberForShow(): Observable<MyGoodsGroupsListMemberItemDto[]>{
-    return of(this.members.filter(x =>
-        x.id.includes(this.form.controls.Search.value) ||
-        x.name.includes(this.form.controls.Search.value)
-      ));
+  searchMemberForShow(): Observable<ResultFindList<MemberProductGroupDto>>{
+    return this._productService.findMemberProductGroup(this.product_group_id,this.form.value)
+  }
+  pageSelectedChange(event: PageNumberChangedEvent):void{
+    this.form.patchValue({
+      page:event.pageNumber
+    });
+
+  }
+  nPageChange(event: PageSizeChangedEvent):void{
+     this.form.patchValue({
+      pageSize:event.pageSize
+    });
   }
 }

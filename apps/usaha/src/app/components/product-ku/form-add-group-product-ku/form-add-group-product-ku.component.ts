@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { switchMap } from 'rxjs';
@@ -23,10 +24,13 @@ import { DuplicateGroupNameValidator } from './DuplicateGroupNameValidator';
     MatFormFieldModule,
     MatButtonModule,
     ReactiveFormsModule,
-    FlexLayoutModule
-  ]
+    FlexLayoutModule,
+    MatDialogModule
+  ],
+  providers:[ShopStateService]
 })
 export class FormAddGroupProductKuComponent implements OnInit {
+  @Input() id_usaha!:string;
   @Output() Submitted: EventEmitter<void> = new EventEmitter<void>();
   @Output() Canceled: EventEmitter<void> = new EventEmitter<void>();
   form: FormGroup = this.fb.nonNullable.group({
@@ -37,7 +41,7 @@ export class FormAddGroupProductKuComponent implements OnInit {
     description: this.fb.control('',{
       validators:[Validators.maxLength(255)],
     }),
-    shop_id: this.fb.nonNullable.control(this._shopStateService.current_shop$.value, {
+    shop_id: this.fb.nonNullable.control(this.id_usaha, {
       validators:[Validators.maxLength(255)],
     })
   });
@@ -52,10 +56,14 @@ export class FormAddGroupProductKuComponent implements OnInit {
     private readonly productGroupService: ProductGroupService,
     private readonly notifService: PopUpNotifService,
     private readonly _shopStateService:ShopStateService
-    ) { }
+    ) { 
+    }
 
   ngOnInit(): void {
-
+    
+    this._shopStateService.current_shop$.next(this.id_usaha);
+    this.form.controls['shop_id'].setValue(this.id_usaha);
+    this.form.controls['shop_id'].updateValueAndValidity();
   }
 
   submit(): void{

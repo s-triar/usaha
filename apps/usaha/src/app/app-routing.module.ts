@@ -90,8 +90,13 @@ const routes: Routes = [
                 loadComponent: () => import('./modules/workspace/product/product.component').then(x=>x.ProductComponent)
             },
         ]
-        
-    }
+    },
+    {
+        path:'workspace/:shop_id/product/add',
+        loadComponent: ()=> import('./modules/workspace/add-product/add-product.component').then(x=>x.AddProductComponent),
+        resolve:{shop_id:ShopTokenResolver},
+        canActivate:[AuthGuard],
+    },
   ];
   
 @NgModule({

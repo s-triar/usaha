@@ -2,10 +2,10 @@
     <form [formGroup]="form" >
         <mat-step [stepControl]="infoGroup">
         <ng-template matStepLabel>Informasi Produk</ng-template>
-        <div formGroupName="info" class="form-input-container">
+        <div formGroupName="infoGroup" class="form-input-container">
             <div class="img-preview" [style.background-image]="'url(' + (url !== null ? (urlImg!==null? urlImg : url) : defaultImg) + ')'">
                 <img [src]="url !== null ? url : defaultImg" style="visibility: hidden;" width="100%"/>
-                <usaha-button-upload-file class="btn-upload-file" formControlName="PhotoFile" (changed)="changed($event)" ></usaha-button-upload-file>
+                <usaha-button-upload-file class="btn-upload-file" formControlName="photo_file" (changed)="changed($event)" ></usaha-button-upload-file>
             </div>
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always" >
                 <mat-label>Barcode Produk</mat-label>
@@ -24,7 +24,7 @@
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always" >
                 <mat-label>Kategori Produk</mat-label>
                 <mat-select formControlName="product_type_id" #selectGoodType (selectionChange)="selectGoodsType($event)">
-                        <mat-option *ngFor="let item of GoodsTypes ; let i = index" [value]="item.id" [ngStyle]="GoodsTypeIdProduct?.value !==null && i ==0 ? {'display':'none'}:{}">{{item.name}}</mat-option>
+                        <mat-option *ngFor="let item of GoodsTypes ; let i = index" [value]="item.id" [ngStyle]="GoodsTypeIdProduct?.value !==null && i ===0 ? {'display':'none'}:{}">{{item.name}}</mat-option>
                 </mat-select>
                 <mat-hint class="color-warn" *ngIf="(GoodsTypeIdProduct?.dirty || GoodsTypeIdProduct?.touched) && GoodsTypeIdProduct?.hasError('required')">Kategori produk harus diisi.</mat-hint>
             </mat-form-field>
@@ -43,9 +43,9 @@
                 <mat-hint class="color-warn" *ngIf="(ContainProduct?.dirty || ContainProduct?.touched) && ContainProduct?.hasError('required')">Isi produk dengan kemasan yang paling kecil harus diisi.</mat-hint>
                 <mat-hint class="color-warn" *ngIf="(ContainProduct?.dirty || ContainProduct?.touched) && ContainProduct?.hasError('min')">Nilai minimal adalah 1.</mat-hint>
             </mat-form-field>
-            <div class="mat-form-field">
+            <!-- <div class="mat-form-field">
                 <mat-checkbox formControlName="AvailableOnline"  >Jual Online?</mat-checkbox>
-            </div>
+            </div> -->
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Barcode Produk Packaging Lebih Besar</mat-label>
                 <input matInput placeholder="Barcode Produk Packaging Lebih Besar" formControlName="barcode_parent" autocomplete="off">
@@ -71,25 +71,25 @@
     </mat-step>
     <mat-step [stepControl]="pricingGroup">
         <ng-template matStepLabel>Harga</ng-template>
-        <div formGroupName="pricing" class="form-input-container">
+        <div formGroupName="pricingGroup" class="form-input-container">
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Harga Beli Produk</mat-label>
                 <span matPrefix>Rp&nbsp;</span>
-                <app-input-currency placeholder="Harga Beli Produk" formControlName="buy_price"></app-input-currency>
+                <usaha-input-currency placeholder="Harga Beli Produk" formControlName="buy_price"></usaha-input-currency>
                 <mat-hint class="color-warn" *ngIf="(BuyPriceProduct?.dirty || BuyPriceProduct?.touched) && BuyPriceProduct?.hasError('required')">Harga beli produk harus diisi.</mat-hint>
                 <mat-hint class="color-warn" *ngIf="(BuyPriceProduct?.dirty || BuyPriceProduct?.touched) && BuyPriceProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
             </mat-form-field>
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Harga Jual Produk</mat-label>
                 <span matPrefix>Rp&nbsp;</span>
-                <app-input-currency placeholder="Harga Jual Produk" formControlName="sell_price" ></app-input-currency>
+                <usaha-input-currency placeholder="Harga Jual Produk" formControlName="sell_price" ></usaha-input-currency>
                 <mat-hint class="color-warn" *ngIf="(PriceProduct?.dirty || PriceProduct?.touched) && PriceProduct?.hasError('required')">Harga jual produk harus diisi.</mat-hint>
                 <mat-hint class="color-warn" *ngIf="(PriceProduct?.dirty || PriceProduct?.touched) && PriceProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
             </mat-form-field>
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Harga Jual Grosir Produk</mat-label>
                 <span matPrefix>Rp&nbsp;</span>
-                <app-input-currency placeholder="Harga Jual Grosir Produk" formControlName="whole_sale_price" ></app-input-currency>
+                <usaha-input-currency placeholder="Harga Jual Grosir Produk" formControlName="whole_sale_price" ></usaha-input-currency>
                 <mat-hint class="color-warn" *ngIf="(WholesalerPriceProduct?.dirty || WholesalerPriceProduct?.touched) && WholesalerPriceProduct?.hasError('required')">Harga jual grosir produk harus diisi.</mat-hint>
                 <mat-hint class="color-warn" *ngIf="(WholesalerPriceProduct?.dirty || WholesalerPriceProduct?.touched) && WholesalerPriceProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
             </mat-form-field>
@@ -109,7 +109,7 @@
     </mat-step>
     <mat-step [stepControl]="stockGroup">
         <ng-template matStepLabel>Stok</ng-template>
-        <div formGroupName="stock" class="form-input-container">
+        <div formGroupName="stockGroup" class="form-input-container">
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Jumlah Produk Di Dalam Stok Sekarang</mat-label>
                 <input autocomplete="off" matInput placeholder="Jumlah Produk Di Dalam Stok Sekarang" formControlName="current_stock" type="number" style="text-align: right;" min="0" >

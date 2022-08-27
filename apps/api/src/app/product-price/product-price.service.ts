@@ -37,7 +37,7 @@ export class ProductPriceService {
             created_by_id: userLoggedIn.id
         };
         if(queryRunner){
-            await queryRunner.manager.save(candidate);
+            await queryRunner.manager.getRepository(ProductPrice).save<ProductPrice>(candidate);
             return;
         }
         queryRunner = this._dataSource.createQueryRunner();
@@ -45,7 +45,7 @@ export class ProductPriceService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            await queryRunner.manager.save(candidate);
+            await queryRunner.manager.getRepository(ProductPrice).save<ProductPrice>(candidate);
         
             await queryRunner.commitTransaction();
         } catch (err) {

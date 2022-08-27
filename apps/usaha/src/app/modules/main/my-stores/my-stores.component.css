@@ -3,3 +3,47 @@
     height: 100%;
     grid-template-rows: auto 1fr auto;
 }
+.list-shop-card-container{
+    margin: 0px 1em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: stretch;
+    /* justify-content: space-around; */
+    align-items: stretch;
+}
+.shop-card{
+    /* text-decoration: none; */
+    width: calc((100% / 4) - 4em);
+    height: 350px;
+    margin: 1em 1em;
+}
+/* .shop-card{
+} */
+.shop-card.handset{
+    width: calc((100%) - 4em);
+}
+.shop-card.tablet{
+    width: calc((100% / 2) - 4em);
+}
+.shop-card.web{
+    width: calc((100% / 3) - 4em);
+}
+.shop-card .img-shop-card{
+    position: relative;
+    height: 170px;
+    width: 100%;
+    /* background-image: url('http://localhost:3001/uploads/shop/shop-5f446ddc-ba5d-44a0-b931-6c3cd8eeb91a.jpeg'); */
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.shop-card .shop-card-action{
+    position: absolute;
+    bottom: 1em;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+}

@@ -4,10 +4,10 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, Reacti
 import { MatSelect, MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { MatDialog } from '@angular/material/dialog';
-import { GroupProductKuDialogComponent } from '../group-product-ku-dialog/group-product-ku-dialog.component';
+import { GroupProductKuDialogComponent, GroupProductKuDialogComponentData } from '../group-product-ku-dialog/group-product-ku-dialog.component';
 import { MemberGroupProductKuDialogComponent } from '../member-group-product-ku-dialog/member-group-product-ku-dialog.component';
 import { of, switchMap } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,6 +26,7 @@ import { CustomUploadFileEventChange } from '../../../types';
 import { MyShopProductGroupDto, ProductTypeDto } from '@usaha/api-interfaces';
 import { ProductService } from '../../../services/product.service';
 import { ProductTypeService } from '../../../services/product-type.service';
+import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 
 @UntilDestroy()
 @Component({
@@ -47,7 +48,8 @@ import { ProductTypeService } from '../../../services/product-type.service';
     FormsModule,
     InputCurrencyComponent,
     MatCheckboxModule
-  ]
+  ],
+  providers:[CurrencyConversionService, CurrencyPipe]
 
 })
 export class FormAddProductKuComponent implements OnInit {
@@ -182,6 +184,7 @@ export class FormAddProductKuComponent implements OnInit {
     this.productTypeService.getAllProductType().pipe(untilDestroyed(this)).subscribe(res => {
       if (res.length > 0){
         this.GoodsTypesData = res;
+        this.GoodsTypes = this.GoodsTypesData.filter(x=>x.parent_id===0);
       }
     });
     this.initForm();
@@ -193,8 +196,12 @@ export class FormAddProductKuComponent implements OnInit {
       return;
     }
     const temp = this.form.value;
-    temp.info.GoodsGroups = this.form.get('product_group_ids')?.value.value ?? [];
-    const temp2 = {...temp.info, ...temp.pricing, ...temp.stock};
+    console.log(temp);
+    
+    temp.infoGroup.product_group_ids = this.infoGroup.get('product_group_ids')?.value.value ?? [];
+    const temp2 = {...temp.infoGroup, ...temp.pricingGroup, ...temp.stockGroup};
+    console.log(temp2);
+    
     this.productService.addProduct(temp2)
         .pipe(
           untilDestroyed(this),
@@ -244,24 +251,28 @@ export class FormAddProductKuComponent implements OnInit {
   }
   openScanner(): void{
     this.dialog.open(ScannerDialogComponent, {hasBackdrop: true, width: '480px', disableClose: true}).afterClosed().subscribe(x => {
-      this.form.get('barcode')?.setValue(null);
+      this.infoGroup.get('barcode')?.setValue(null);
       if (x !== undefined){
-        this.form.get('barcode')?.setValue(x);
+        this.infoGroup.get('barcode')?.setValue(x);
       }
-      this.form.get('barcode')?.updateValueAndValidity();
+      this.infoGroup.get('barcode')?.updateValueAndValidity();
     });
   }
   changed(event: CustomUploadFileEventChange): void{
+    console.log(event);
+    
     if (event.file !== null){
       this.url = event.dataFile;
-      this.form.patchValue({
+      this.infoGroup.patchValue({
         photo_string: event.dataFile,
         photo_file: event.file,
         photo: event.file?.name
       });
-      this.form.get('photo')?.updateValueAndValidity();
-      this.form.get('photo_file')?.updateValueAndValidity();
-      this.form.get('photo_string')?.updateValueAndValidity();
+      this.infoGroup.get('photo')?.updateValueAndValidity();
+      this.infoGroup.get('photo_file')?.updateValueAndValidity();
+      this.infoGroup.get('photo_string')?.updateValueAndValidity();
+      console.log(this.form.value);
+      
     }
   }
   selectGoodsType(event: MatSelectChange): void{
@@ -269,6 +280,8 @@ export class FormAddProductKuComponent implements OnInit {
     const v = parseInt(val, 10);
     const temp = this.GoodsTypesData.find(x => x.id === v);
     const temp_children = this.GoodsTypesData.filter(x => x.parent_id === temp?.id);
+    console.log(temp_children);
+    
     // let tempArr: GoodsTypeDto[] = [];
     if (v === this.goodTypeBack.id){
       const t = this.GoodsTypesData.find(x => x.id === this.temporarySelectedGoodType);
@@ -293,7 +306,7 @@ export class FormAddProductKuComponent implements OnInit {
           this.GoodsTypes.push(this.goodTypeReset);
         }
       }
-      this.form.get('product_type_id')?.setValue(this.temporarySelectedGoodType);
+      this.infoGroup.get('product_type_id')?.setValue(this.temporarySelectedGoodType);
       setTimeout(() => {
         this.selectGoodType.open();
       }, 100);
@@ -302,7 +315,7 @@ export class FormAddProductKuComponent implements OnInit {
       const a = this.GoodsTypesData.filter(y => y.parent_id === 0);
       this.GoodsTypes = Array.from(a);
       this.temporarySelectedGoodType = null;
-      this.form.get('product_type_id')?.setValue(this.temporarySelectedGoodType);
+      this.infoGroup.get('product_type_id')?.setValue(this.temporarySelectedGoodType);
       setTimeout(() => {
         this.selectGoodType.open();
       }, 100);
@@ -318,32 +331,36 @@ export class FormAddProductKuComponent implements OnInit {
         this.selectGoodType.open();
       }, 100);
     }
-    this.form.get('product_type_id')?.updateValueAndValidity();
+    this.infoGroup.get('product_type_id')?.updateValueAndValidity();
   }
   openDialogGroup(): void{
+    const data_dialog:GroupProductKuDialogComponentData={
+      groupSelected: this.tempSelectedGoodsGroup,
+      id_usaha:this.idUsaha
+    }
     this.dialog.open(GroupProductKuDialogComponent,
-      {data: this.tempSelectedGoodsGroup, hasBackdrop: true, maxWidth: '480px', width: '80%', disableClose: true })
+      {data: data_dialog, hasBackdrop: true, maxWidth: '480px', width: '80%', disableClose: true })
     .afterClosed().subscribe((res: MyShopProductGroupDto[]) => {
       res = res.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
       this.tempSelectedGoodsGroup = res;
-      if (this.form.get('product_group_ids')?.value.length > 0){
-        this.form.get('product_group_ids')?.value.clear();
+      if (this.infoGroup.get('product_group_ids')?.value.length > 0){
+        this.infoGroup.get('product_group_ids')?.value.clear();
       }
-      res.map(x => x.id).forEach(x => this.form.get('product_group_ids')?.value.push(this.fb.control(x)));
+      res.map(x => x.id).forEach(x => this.infoGroup.get('product_group_ids')?.value.push(this.fb.control(x)));
     });
   }
   removeGroup(id: string): void{
     const idx = this.tempSelectedGoodsGroup.findIndex(x => x.id === id);
     this.tempSelectedGoodsGroup.splice(idx, 1);
     // const idx2 = this.form.get('product_group_ids')?.controls.findIndex(x => x.value === id);
-    this.form.get('product_group_ids')?.value.removeAt(idx);
+    this.infoGroup.get('product_group_ids')?.value.removeAt(idx);
   }
   showGroupMemberDialog(id: string): void{
     const temp = this.tempSelectedGoodsGroup.find(x => x.id === id);
     this.dialog.open(MemberGroupProductKuDialogComponent,
       {
         // data: temp && temp.members.length > 0 ? temp.members : [],
-        data: [],
+        data: id,
         maxWidth: '480px',
         width: '80%',
         disableClose: true

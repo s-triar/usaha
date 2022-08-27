@@ -1,0 +1,17 @@
+.drawer-workspace-container{
+    height: 100vh;
+    width: 100vw;
+    overflow-y: auto;
+}
+.drawer-workspace{
+    width: 300px;
+}
+.drawer-workspace .toolbar-drawer-workspace{
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    align-content: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+}

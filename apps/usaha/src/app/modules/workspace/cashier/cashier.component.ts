@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
+import { WorkspaceStateService } from '../workspace-state.service';
 
 @Component({
   selector: 'usaha-cashier',
@@ -11,10 +12,12 @@ import { ProductService } from '../../../services/product.service';
 })
 export class CashierComponent implements OnInit {
   constructor(
-    private _productService:ProductService
+    private _wsStateService: WorkspaceStateService,
+    private _productService:ProductService,
   ) {}
 
   ngOnInit(): void {
+    this._wsStateService.title$.next('Kasir');
     console.log("from workspace/cashier");
     // this._productService.getMyStoreProducts().subscribe();
   }

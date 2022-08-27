@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards, Request, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, Request, UseInterceptors, Param } from '@nestjs/common';
 import { MyShopProductGroupDto, RegisterProductGroupDto, RequestFindList, RequestFindListShopEntity, ResultFindList } from '@usaha/api-interfaces';
 import { AuthUserGuard } from '../auth-user/auth-user.guard';
 import { ShopInterceptorInterceptor } from '../shop-interceptor/shop-interceptor.interceptor';
@@ -22,12 +22,13 @@ export class ProductGroupController {
     }
 
     @UseGuards(AuthUserGuard)
-    @Get('find-my-shop-product-groups')
+    @Get('find-my-shop-product-groups/:shop_id')
     @UseInterceptors(ShopInterceptorInterceptor)
     async findMyShopProductGroups(
-        @Query() data: RequestFindListShopEntity,
+        @Param('shop_id') shop_id:string,
+        @Query() data: RequestFindList,
     ):Promise<ResultFindList<MyShopProductGroupDto>>{
-        return await this._productGroupService.findMyStoreProductGroups(data.name,data.shop_id,data.page, data.pageSize);
+        return await this._productGroupService.findMyStoreProductGroups(data.name,shop_id,data.page, data.pageSize);
     }
 
     @UseGuards(AuthUserGuard)

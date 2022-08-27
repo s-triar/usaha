@@ -13,13 +13,13 @@ import { debounceTime, distinctUntilChanged, Observable, switchMap } from 'rxjs'
 import { ProductGroupService } from '../../../services/product-group.service';
 
 import { currentPageDescription, PageNumberChangedEvent, PageSizeChangedEvent, PaginationSimpleComponent } from '../../pagination/pagination-simple/pagination-simple.component';
-import { AddGroupProductKuDialogComponent } from '../add-group-product-ku-dialog/add-group-product-ku-dialog.component';
+import { AddGroupProductKuDialogComponent, DialogAddProductGroupData } from '../add-group-product-ku-dialog/add-group-product-ku-dialog.component';
 import { MemberGroupProductKuDialogComponent } from '../member-group-product-ku-dialog/member-group-product-ku-dialog.component';
 
-type MyShopProductGroupChoiceDto= MyShopProductGroupDto&{
+export type MyShopProductGroupChoiceDto= MyShopProductGroupDto&{
   selected: boolean;
 };
-type GroupProductKuDialogComponentData = {
+export type GroupProductKuDialogComponentData = {
   groupSelected: MyShopProductGroupDto[],
   id_usaha:string
 }
@@ -71,7 +71,6 @@ export class GroupProductKuDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.searchGroupProduct();
-    this.setPaginationConfig();
     this.form.get('name')?.setValue('', {onlySelf: true});
     this.form.get('name')?.updateValueAndValidity();
   }
@@ -107,19 +106,30 @@ export class GroupProductKuDialogComponent implements OnInit {
       this.form.get('pageSize')?.value,
     );
   }
-  setPaginationConfig(): void{
-    this.pagination.setPageSize(this.form.get('pageSize')?.value);
-    this.pagination.setPagesNumbers(this.form.get('page')?.value);
-  }
-  paginationNChanged(event: PageSizeChangedEvent): void{
-    this.form.get('pageSize')?.setValue(event.pageSize);
-    this.form.updateValueAndValidity();
-  }
+  pageSelectedChange(event: PageNumberChangedEvent):void{
+    this.form.patchValue({
+      page:event.pageNumber
+    });
 
-  pageSelectedChanged(event: PageNumberChangedEvent): void{
-    this.form.get('page')?.setValue(event.pageNumber);
-    this.form.updateValueAndValidity();
   }
+  nPageChange(event: PageSizeChangedEvent):void{
+     this.form.patchValue({
+      pageSize:event.pageSize
+    });
+  }
+  // setPaginationConfig(): void{
+  //   this.pagination.setPageSize(this.form.get('pageSize')?.value);
+  //   this.pagination.setPagesNumbers(this.form.get('page')?.value);
+  // }
+  // paginationNChanged(event: PageSizeChangedEvent): void{
+  //   this.form.get('pageSize')?.setValue(event.pageSize);
+  //   this.form.updateValueAndValidity();
+  // }
+
+  // pageSelectedChanged(event: PageNumberChangedEvent): void{
+  //   this.form.get('page')?.setValue(event.pageNumber);
+  //   this.form.updateValueAndValidity();
+  // }
   selectGroup(id: string): void{
     const temp = this.groupList.find(x => x.id === id);
     if (temp){
@@ -144,10 +154,10 @@ export class GroupProductKuDialogComponent implements OnInit {
     this.reRenderGroupList();
   }
   showMemberDialog(id: string): void{
-    const temp = this.groupList.find(x => x.id === id);
+    // const temp = this.groupList.find(x => x.id === id);
     this.dialog.open(MemberGroupProductKuDialogComponent,
       {
-        data: [],
+        data: id,
         // data: temp && temp.members.length > 0 ? temp.members : [],
         maxWidth: '480px',
         width: '80%',
@@ -156,8 +166,12 @@ export class GroupProductKuDialogComponent implements OnInit {
       .afterClosed().subscribe();
   }
   openDialogAddGroup(): void{
+    const dialog_data:DialogAddProductGroupData={
+      items:this.dialogData.groupSelected.map(x=>x.id),
+      shop_id:this.dialogData.id_usaha
+    };
     this.dialog.open(AddGroupProductKuDialogComponent,
-      {data: [], hasBackdrop: true, maxWidth: '480px', width: '80%', disableClose: true })
+      {data: dialog_data, hasBackdrop: true, maxWidth: '480px', width: '80%', disableClose: true })
     .afterClosed()
     .pipe(switchMap(x => this.callSearchProductApi()))
     .subscribe(x => {

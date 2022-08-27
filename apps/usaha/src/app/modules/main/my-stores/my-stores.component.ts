@@ -11,7 +11,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ShopService } from '../../../services/shop.service';
 import { debounceTime, startWith, switchMap } from 'rxjs';
 import { MyShopListItemDto } from '@usaha/api-interfaces';
-
+import { MatCardModule } from "@angular/material/card";
+import {BreakpointObserver, Breakpoints, LayoutModule} from '@angular/cdk/layout';
+import { PRODUCT_DEFAULT } from '../../../constants';
+import { environment } from 'apps/usaha/src/environments/environment';
 @Component({
   selector: 'usaha-my-stores',
   standalone: true,
@@ -24,30 +27,51 @@ import { MyShopListItemDto } from '@usaha/api-interfaces';
     MatIconModule,
     MatMenuModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatCardModule,
+    LayoutModule
   ],
   templateUrl: './my-stores.component.html',
   styleUrls: ['./my-stores.component.css'],
 })
 export class MyStoresComponent implements OnInit {
   @ViewChild('pagination',{static:true}) pagination!:PaginationSimpleComponent;
+  screen = '';
+  backend=environment.backend;
+  defaultPhoto = PRODUCT_DEFAULT;
   form:FormGroup = this._fb.nonNullable.group({
     name:this._fb.nonNullable.control(''),
     page:this._fb.nonNullable.control(1),
-    pageSize:this._fb.nonNullable.control(20)
+    pageSize:this._fb.nonNullable.control(6)
   });
   items: MyShopListItemDto[]=[];
   constructor(
     private _fb:FormBuilder,
-    private _shopService:ShopService
+    private _shopService:ShopService,
+    private _breakPointObs: BreakpointObserver
   ) {}
 
   ngOnInit(): void {
+    this._breakPointObs.observe([
+      Breakpoints.Handset,
+      Breakpoints.Web,
+      Breakpoints.Tablet,
+    ]).subscribe(result => {
+      if (result.breakpoints['(min-width: 840px) and (orientation: portrait)'] || result.breakpoints['(min-width: 1280px) and (orientation: landscape)']) {
+        this.screen="web";
+      }
+      else if(result.breakpoints['(min-width: 600px) and (max-width: 839.98px) and (orientation: portrait)'] || result.breakpoints['(min-width: 960px) and (max-width: 1279.98px) and (orientation: landscape)']){
+        this.screen="tablet";
+      }
+      else if(result.breakpoints['(max-width: 599.98px) and (orientation: portrait)'] || result.breakpoints['(max-width: 959.98px) and (orientation: landscape)']){
+        this.screen="handset";
+      }
+    });
     this.form.valueChanges.pipe(
       startWith({
         name:'',
         page:1,
-        pageSize:20
+        pageSize:6
       }),
       debounceTime(500),
       switchMap(x=>this._shopService.findMyShops(x))

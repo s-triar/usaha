@@ -22,9 +22,15 @@ import { HashIdService } from './hash-id/hash-id.service';
 import { ProductPhotoModule } from './product-photo/product-photo.module';
 import { ShopAddressModule } from './shop-address/shop-address.module';
 import { ShopPhotoModule } from './shop-photo/shop-photo.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+// console.log(join(__dirname, '..', '..','apps','api','assets'));
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..','apps','api','assets'),
+    }),
     AuthUserModule,
     // ShopAuthModule,
 

@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MyShopProductGroupDto, RegisterProductGroupDto, RequestFindListShopEntity, ResultFindList } from '@usaha/api-interfaces';
+import { MyShopProductGroupDto, RegisterProductGroupDto, RequestFindList, RequestFindListShopEntity, ResultFindList } from '@usaha/api-interfaces';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -17,16 +17,15 @@ export class ProductGroupService {
   }
 
   findMyShopProductGroups(name:string, shop_id:string, page:number, pageSize:number):Observable<ResultFindList<MyShopProductGroupDto>>{
-    const reqfl: RequestFindListShopEntity = {
+    const reqfl: RequestFindList = {
       name:name,
       page:page,
       pageSize:pageSize,
-      shop_id:shop_id
     };
     const param = new HttpParams({
       fromObject:{...reqfl}
     });
-    return this._http.get<ResultFindList<MyShopProductGroupDto>>('/api/product-group/find-my-shop-product-groups',{params:param})
+    return this._http.get<ResultFindList<MyShopProductGroupDto>>(`/api/product-group/find-my-shop-product-groups/${shop_id}`,{params:param})
   }
   
   createProductGroup(data:RegisterProductGroupDto):Observable<void>{

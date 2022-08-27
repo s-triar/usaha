@@ -121,6 +121,8 @@ export class ShopService {
 
   findOneByHashedId(id: string): Promise<Shop> {
     const id_decode = this._hasher.decrypt(id);
+    console.log(id_decode);
+    
     if(!id_decode){
       throw new UnprocessableEntityException('Id is not recognized');
     }
@@ -164,9 +166,10 @@ export class ShopService {
       },
       skip:(page-1)*pageSize,
       take:pageSize,
-      relations:['shop_type']
+      relations:['shop_type','shop_photos', 'shop_addresses']
     });
     const shopsDto = shops.map((item) => {
+      const addrs = item.shop_addresses.length>0 ?item.shop_addresses.pop():null;
       const temp: MyShopListItemDto = {
         id: this._hasher.encrypt(item.id),
         name: item.name,
@@ -174,6 +177,10 @@ export class ShopService {
         owned: item.owner_id === userLoggedIn.id,
         phone: item.phone,
         shop_code: item.shop_code,
+        photo:item.shop_photos.length>0?'/uploads/shop/'+item.shop_photos.pop().url:null,
+        address: addrs? `
+        ${addrs.street}, ${addrs.village}, ${addrs.district}
+        `:''
       };
       return temp;
     });

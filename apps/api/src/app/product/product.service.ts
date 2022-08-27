@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  MemberProductGroupDto,
   ProductOfMyShopListItemDto,
   RegisterProductDto,
   RegisterProductInDto,
@@ -33,10 +34,10 @@ export class ProductService {
   ) {}
 
   async findProductWithBarcode(
-    barcode: string,
-    shop_id: string
+    shop_id: string,
+    barcode: string
   ): Promise<Product> {
-    const shop_id_int = this._hasher.decrypt(shop_id);
+    const shop_id_int = this._hasher.decrypt(shop_id);    
     return await this._productRepository.findOneBy({
       barcode: barcode,
       shop_id: shop_id_int,
@@ -78,7 +79,7 @@ export class ProductService {
         created_at: new Date(),
         created_by_id: userLoggedIn.id,
       };
-      const new_product = await queryRunner.manager.save(candidate);
+      const new_product = await queryRunner.manager.getRepository(Product).save<Product>(candidate);
       const new_product_id_str = this._hasher.encrypt(new_product.id);
       // add product in
       const data_product_in: RegisterProductInDto = {
@@ -218,6 +219,8 @@ export class ProductService {
     if (!name) {
       name = '';
     }
+    console.log(name, page, pageSize);
+    
     const store_id_int = this._hasher.decrypt(store_id);
     const [products, countProducts] =
       await this._productRepository.findAndCount({
@@ -234,8 +237,8 @@ export class ProductService {
         order: {
           name: 'ASC',
         },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip: ((1*page) - 1) * (1*pageSize),
+        take: (1*pageSize),
         relations: ['product_type', 'product_prices', 'product_stocks'],
       });
     const productsDto = products.map((item) => {
@@ -255,6 +258,48 @@ export class ProductService {
     const result: ResultFindList<ProductOfMyShopListItemDto> = {
       items: productsDto,
       count: countProducts,
+    };
+    return result;
+  }
+  async findProductInGroup(
+    product_group_id: string,
+    name: string,
+    page: number,
+    pageSize: number
+  ): Promise<ResultFindList<MemberProductGroupDto>> {
+    const product_group_id_int: number =
+      this._hasher.decrypt(product_group_id);
+    if (!name) {
+      name = '';
+    }
+    const [groups, countGroups] =
+      await this._productRepository.findAndCount({
+        where: [
+          {
+            groups:{
+              id: product_group_id_int
+            },
+            name: Like(`%${name}%`)
+          },
+        ],
+        order: {
+          name:'ASC'
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        relations: ['groups'],
+      });
+    const groupsDto = groups.map((x) => {
+        const temp: MemberProductGroupDto={
+          barcode:x.barcode,
+          id: this._hasher.encrypt(x.id),
+          name:x.name
+        }
+      return temp;
+    });
+    const result: ResultFindList<MemberProductGroupDto> = {
+      count: countGroups,
+      items: groupsDto,
     };
     return result;
   }

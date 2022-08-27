@@ -1,1 +1,25 @@
-<p>product works!</p>
+<div class="container-my-store-products">
+    <usaha-search-form-list (searchValue)="searchValue($event)"></usaha-search-form-list>
+    
+    <mat-nav-list class="product-item-container" *ngIf="items.length>0 else nolist">
+      <a mat-list-item *ngFor="let item of items" class="product-item"> 
+        <div class="product-item-layout">
+          <div>{{item.barcode}}</div>
+          <div>{{item.name}}</div>
+          <div style="text-align: right;">{{item.price | currency:'Rp. ':'code':'.2-2'}}</div>
+        </div>   
+      </a>
+    </mat-nav-list>
+    <ng-template #nolist>
+      <div class="no-item-banner"><span>Tidak ada produk</span></div>
+    </ng-template>
+    <usaha-pagination-simple 
+    #pagination
+    (pageSelectedChanged)="pageSelectedChange($event)"
+    (nPageChanged)="nPageChange($event)"
+    ></usaha-pagination-simple>
+</div>
+<a mat-fab style="position: absolute;right:1rem; bottom:5rem;" [routerLink]="['./add']">
+    <mat-icon>add</mat-icon>
+</a>
+

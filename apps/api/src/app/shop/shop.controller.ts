@@ -56,7 +56,8 @@ export class ShopController {
 
   @UseGuards(AuthUserGuard)
   @UseInterceptors(FileInterceptor('photo_file',{preservePath:true, storage:diskStorage({
-    destination:'./assets/uploads/shop',
+    // destination:'./apps/api/src/assets/uploads/shop',
+    destination:'./dist/apps/api/assets/uploads/shop',
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filename: (req: any, file: any, cb: any) => {
         cb(null, `shop-${uuid()}${extname(file.originalname)}`);
@@ -84,8 +85,6 @@ export class ShopController {
       path: file.filename,
       shop_id:''
     };
-    console.log(photo_data);
-    
     const user = req.user;
     await this._shopService.createTransaction(user, data, photo_data);
   }

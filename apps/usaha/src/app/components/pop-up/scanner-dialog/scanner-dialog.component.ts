@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewChecked, AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -22,7 +22,7 @@ import { ZXingScannerComponent, ZXingScannerModule } from '@zxing/ngx-scanner';
     MatButtonModule
   ]
 })
-export class ScannerDialogComponent implements OnInit, AfterViewInit {
+export class ScannerDialogComponent implements OnInit, AfterViewInit, AfterViewChecked {
   @ViewChild('scanner', { static: true }) scanner!: ZXingScannerComponent;
   @ViewChild('cameras', { static: true }) cameras!: MatSelect;
 
@@ -43,12 +43,16 @@ export class ScannerDialogComponent implements OnInit, AfterViewInit {
   torchEnabled = false;
   tryHarder = false;
   constructor(
+    private _cdr: ChangeDetectorRef,
     private dialogRef: MatDialogRef<ScannerDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data: BarcodeFormat[] |null
   ) {
     if (this.data !== null){
       this.allowedFormats = this.data;
     }
+  }
+  ngAfterViewChecked(): void {
+    this._cdr.detectChanges();
   }
   // ngAfterViewChecked(): void {
   //   this.cameras.value = this.deviceSelected;

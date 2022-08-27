@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ProductOfMyShopListItemDto, RegisterProductDto, RequestFindList, ResultFindList } from '@usaha/api-interfaces';
+import { MemberProductGroupDto, ProductOfMyShopListItemDto, RegisterProductDto, RequestFindList, ResultFindList } from '@usaha/api-interfaces';
 import { Observable } from 'rxjs';
 import { FormConversionService } from './form-conversion.service';
 
@@ -18,7 +18,7 @@ export class ProductService {
     const params = new HttpParams({
       fromObject: {...data}
     });
-    return this.http.get<ResultFindList<ProductOfMyShopListItemDto>>('/api/product/find-my-store-products/'+shop_id,{params:params});
+    return this.http.get<ResultFindList<ProductOfMyShopListItemDto>>(`/api/product/find-my-store-products/${shop_id}`,{params:params});
   }
 
   addProduct(data: RegisterProductDto):Observable<void>{
@@ -28,5 +28,11 @@ export class ProductService {
 
   checkDuplicateBarcode(shop_id: string, barcode:string):Observable<boolean>{
     return this.http.get<boolean>('/api/product/check-duplicate-barcode/'+shop_id, {params:{barcode:barcode}});
+  }
+  findMemberProductGroup(product_group_id:string, data: RequestFindList):Observable<ResultFindList<MemberProductGroupDto>> {
+    const params = new HttpParams({
+      fromObject: {...data}
+    });
+    return this.http.get<ResultFindList<MemberProductGroupDto>>(`/api/product/find-product-in-group/${product_group_id}`,{params:params});
   }
 }

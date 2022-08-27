@@ -12,35 +12,52 @@ import { HashIdService } from '../hash-id/hash-id.service';
 @Injectable()
 export class ProductGroupService {
   constructor(
-    @InjectRepository(ProductGroup) private _productGroupRepository: Repository<ProductGroup>,
+    @InjectRepository(ProductGroup)
+    private _productGroupRepository: Repository<ProductGroup>,
     private _hashIdService: HashIdService
   ) {}
 
-  async addMemberProductGroup(product_group_id:string, product: Product):Promise<void>{
+  async addMemberProductGroup(
+    product_group_id: string,
+    product: Product
+  ): Promise<void> {
     const product_group_id_int = this._hashIdService.decrypt(product_group_id);
-    const group = await this._productGroupRepository.findOneBy({id:product_group_id_int});
-    group.members.push(product)
-    await this._productGroupRepository.update({id:product_group_id_int},{members:group.members});
+    const group = await this._productGroupRepository.findOneBy({
+      id: product_group_id_int,
+    });
+    group.members.push(product);
+    await this._productGroupRepository.update(
+      { id: product_group_id_int },
+      { members: group.members }
+    );
   }
 
-  async removeMemberProductGroup(product_group_id:string, product: Product):Promise<void>{
+  async removeMemberProductGroup(
+    product_group_id: string,
+    product: Product
+  ): Promise<void> {
     const product_group_id_int = this._hashIdService.decrypt(product_group_id);
-    const group = await this._productGroupRepository.findOneBy({id:product_group_id_int});
-    const temp = group.members.findIndex(x=>{
-      x.id==product.id
+    const group = await this._productGroupRepository.findOneBy({
+      id: product_group_id_int,
     });
-    if(temp > -1){
-      group.members.splice(temp,1);
-      await this._productGroupRepository.update({id:product_group_id_int},{members:group.members});
+    const temp = group.members.findIndex((x) => {
+      x.id == product.id;
+    });
+    if (temp > -1) {
+      group.members.splice(temp, 1);
+      await this._productGroupRepository.update(
+        { id: product_group_id_int },
+        { members: group.members }
+      );
     }
   }
 
-  async findGroupWithIds(ids:number[]): Promise<ProductGroup[]>{
+  async findGroupWithIds(ids: number[]): Promise<ProductGroup[]> {
     return await this._productGroupRepository.find({
-      where:{
-        id: In(ids)
-      }
-    })
+      where: {
+        id: In(ids),
+      },
+    });
   }
 
   async findGroupWithName(
@@ -88,31 +105,29 @@ export class ProductGroupService {
       };
       return temp;
     });
-    const result: ResultFindList<MyShopProductGroupDto>= {
-        count:countGroups,
-        items:groupsDto
-    }
+    const result: ResultFindList<MyShopProductGroupDto> = {
+      count: countGroups,
+      items: groupsDto,
+    };
     return result;
   }
 
   async create(
     name: string,
     shop_id: string,
-    description:string|null,
+    description: string | null,
     userLoggedIn: UserLoggedIn
   ): Promise<void> {
     name = name.trim().toLowerCase();
     const candidate: ProductGroup = {
       id: 0,
-      description:description,
+      description: description,
       name: name,
       shop_id: this._hashIdService.decrypt(shop_id),
       created_at: new Date(),
       created_by_id: userLoggedIn.id,
     };
-    await this._productGroupRepository.save(
-      candidate
-    );
+    await this._productGroupRepository.save(candidate);
     // this._hashIdService.encrypt(new_product_group.id);
   }
 }

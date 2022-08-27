@@ -16,6 +16,7 @@ import {
   Query,
 } from '@nestjs/common';
 import {
+  MemberProductGroupDto,
   ProductOfMyShopListItemDto,
   RegisterProductDto,
   RegisterProductPhotoDto,
@@ -55,10 +56,24 @@ export class ProductController {
   @Get('find-my-store-products/:shop_id')
   async findMyStoreProducts(
     @Param('shop_id') shop_id: string,
-    @Body() data: RequestFindList
+    @Query() data: RequestFindList
   ): Promise<ResultFindList<ProductOfMyShopListItemDto>> {
     return await this._productService.findProductsFromStore(
       shop_id,
+      data.name,
+      data.page,
+      data.pageSize
+    );
+  }
+
+  @UseGuards(AuthUserGuard)
+  @Get('find-product-in-group/:product_group_id')
+  async findProductInGroup(
+    @Param('product_group_id') product_group_id: string,
+    @Query() data: RequestFindList
+  ): Promise<ResultFindList<MemberProductGroupDto>> {
+    return await this._productService.findProductInGroup(
+      product_group_id,
       data.name,
       data.page,
       data.pageSize
@@ -69,6 +84,7 @@ export class ProductController {
   @UseGuards(AuthUserGuard)
   @UseInterceptors(ShopInterceptorInterceptor)
   @UseInterceptors(FileInterceptor('photo_file',{preservePath:true, storage:diskStorage({
+    destination:'./dist/apps/api/assets/uploads/product',
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filename: (req: any, file: any, cb: any) => {
         cb(null, `product-${uuid()}${extname(file.originalname)}`);
@@ -84,7 +100,7 @@ export class ProductController {
           fileType: 'jpeg',
         })
         .addMaxSizeValidator({
-          maxSize: 1000
+          maxSize: 200000
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
@@ -96,8 +112,6 @@ export class ProductController {
         path: file.filename,
         product_id:''
     };
-    console.log(photo_data);
-    
     await this._productService.createTransaction(req.user, data, photo_data);
   }
   // TODO read a product

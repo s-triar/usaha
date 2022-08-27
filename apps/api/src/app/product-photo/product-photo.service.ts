@@ -32,7 +32,7 @@ export class ProductPhotoService {
             created_by_id: userLoggedIn.id
         };
         if(queryRunner){
-            await queryRunner.manager.save(candidate);
+            await queryRunner.manager.getRepository(ProductPhoto).save<ProductPhoto>(candidate);
             return;
         }
         queryRunner = this._dataSource.createQueryRunner();
@@ -40,7 +40,7 @@ export class ProductPhotoService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            await queryRunner.manager.save(candidate);
+            await queryRunner.manager.getRepository(ProductPhoto).save<ProductPhoto>(candidate);
         
             await queryRunner.commitTransaction();
         } catch (err) {
