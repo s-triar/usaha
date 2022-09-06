@@ -92,3 +92,45 @@ export interface ProductOfMyShopListItemDto {
   whole_sale_price:number;
   stock:number;
 }
+
+export interface ProductInfoGroupDto{
+  id:string;
+  shop_id:string;
+  name:string;
+}
+export interface ProductInfoInDto{
+  id:string;
+  n:number;
+  price:number;
+  from?:string|null;
+  created_at:Date;
+}
+export interface ProductInfoPhotoDto{
+  id:string;
+  url:string;
+}
+export interface ProductInfoPriceDto{
+  id:string;
+  wholesale_price:number;
+  price:number;
+  is_auto_wholesale_price:boolean;
+  min_wholesale_price:number;
+  created_at:Date;
+}
+
+export interface ProductInfoDto{
+  id:string;
+  shop_id:string;
+  name:string;
+  barcode:string;
+  description:string;
+  contain:number;
+  theshold_stock:number;
+  product_type_id: number;
+  groups:ProductInfoGroupDto[];
+  product_ins:ProductInfoInDto[];
+  photos:ProductInfoPhotoDto[];
+  prices:ProductInfoPriceDto[];
+  stock:number;
+  product_parent_barcode:string;
+}

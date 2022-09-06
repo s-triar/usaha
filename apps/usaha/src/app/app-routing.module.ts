@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthShopGuard } from './guards/auth-shop.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { UnAuthGuard } from './guards/un-auth.guard';
+import { ProductInfoResolver } from './modules/workspace/info-product/product-info.resolver';
 import { ShopTokenResolver } from './modules/workspace/shop-token.resolver';
 
 const routes: Routes = [
@@ -96,6 +97,12 @@ const routes: Routes = [
         loadComponent: ()=> import('./modules/workspace/add-product/add-product.component').then(x=>x.AddProductComponent),
         resolve:{shop_id:ShopTokenResolver},
         canActivate:[AuthGuard],
+    },
+    {
+        path:'workspace/:shop_id/product/info/:product_id',
+        loadComponent: ()=> import('./modules/workspace/info-product/info-product.component').then(x=>x.InfoProductComponent),
+        canActivate:[AuthGuard],
+        resolve:{product:ProductInfoResolver},
     },
   ];
   

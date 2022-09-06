@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   MemberProductGroupDto,
+  ProductInfoDto,
+  ProductInfoGroupDto,
+  ProductInfoInDto,
+  ProductInfoPhotoDto,
+  ProductInfoPriceDto,
   ProductOfMyShopListItemDto,
   RegisterProductDto,
   RegisterProductInDto,
@@ -42,6 +47,83 @@ export class ProductService {
       barcode: barcode,
       shop_id: shop_id_int,
     });
+  }
+
+  async findProduct(
+    shop_id: string,
+    product_id: string
+  ): Promise<ProductInfoDto> {
+    const shop_id_int = this._hasher.decrypt(shop_id);    
+    const product_id_int = this._hasher.decrypt(product_id);    
+    const product = await this._productRepository.findOne({
+      where:{
+        shop_id:shop_id_int,
+        id:product_id_int
+      },
+      relations:[
+        'product_type',
+        'product_ins',
+        'groups',
+        'product_photos',
+        'product_prices',
+        'product_stocks',
+        'product_parent'
+      ]
+    });
+
+    const prod_groups:ProductInfoGroupDto[]=product.groups.map(x=>{
+      return {
+        id:this._hasher.encrypt(x.id),
+        name:x.name,
+        shop_id:this._hasher.encrypt(x.shop_id)
+      }});
+    
+    const prod_ins: ProductInfoInDto[]=product.product_ins.map(x=>{
+      return {
+        id: this._hasher.encrypt(x.id),
+        n:x.n,
+        created_at:x.created_at,
+        price:x.price,
+        from:x.from
+      }});
+    
+    const prod_photos: ProductInfoPhotoDto[]=product.product_photos.map(x=>{
+      return {
+        id:this._hasher.encrypt(x.id),
+        url:x.url
+      }
+    });
+
+    const prod_prices: ProductInfoPriceDto[]=product.product_prices.map(x=>{
+      return {
+        id:this._hasher.encrypt(x.id),
+        is_auto_wholesale_price: x.is_auto_wholesale_price,
+        min_wholesale_price: x.min_wholesale_price,
+        price:x.price,
+        wholesale_price:x.wholesale_price,
+        created_at:x.created_at
+      }
+    });
+    const last_stock = product.product_stocks.sort(
+      (a,b)=>a.created_at.getTime()-b.created_at.getTime()
+    )[product.product_stocks.length-1];
+    const prod: ProductInfoDto ={
+      barcode:product.barcode,
+      shop_id:this._hasher.encrypt(product.shop_id),
+      id: this._hasher.encrypt(product.id),
+      contain: product.contain,
+      description: product.description,
+      name:product.name,
+      product_parent_barcode:product.product_parent?.barcode ?? null,
+      product_type_id:product.product_type_id,
+      theshold_stock:product.threshold_stock,
+      stock:last_stock.n,
+      groups:prod_groups,
+      photos:prod_photos,
+      prices:prod_prices,
+      product_ins:prod_ins
+    }
+    return prod;
   }
 
   async createTransaction(

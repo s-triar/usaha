@@ -17,6 +17,7 @@ import {
 } from '@nestjs/common';
 import {
   MemberProductGroupDto,
+  ProductInfoDto,
   ProductOfMyShopListItemDto,
   RegisterProductDto,
   RegisterProductPhotoDto,
@@ -115,6 +116,16 @@ export class ProductController {
     await this._productService.createTransaction(req.user, data, photo_data);
   }
   // TODO read a product
+  @UseGuards(AuthUserGuard)
+  @UseInterceptors(ShopInterceptorInterceptor)
+  @Get('info-product/:shop_id/:product_id')
+  async infoProduct(
+    @Param('shop_id') shop_id:string,
+    @Param('product_id') product_id:string,
+    @Request() req
+  ): Promise<ProductInfoDto>{
+    return await this._productService.findProduct(shop_id,product_id);
+  }
   // TODO update a product
   // TODO delete a product
 

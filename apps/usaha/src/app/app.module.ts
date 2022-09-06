@@ -10,6 +10,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { BackService } from './directives/back/back.service';
 import { MatDialogModule } from '@angular/material/dialog';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,7 +20,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
-    MatDialogModule
+    MatDialogModule,
+    NgChartsModule
   ],
   providers: [
     BackService,

@@ -1,1 +1,13 @@
-<p>info-product works!</p>
+<div class="container-add-my-store-product">
+    <header>
+      <usaha-page-header-simple title="Tambah Produk"></usaha-page-header-simple>
+    </header>
+    <usaha-form-info-product-ku 
+        [idUsaha]="shop_id" 
+        [dataGoods]="product" 
+        (updateInfoClickEvent)="update()"
+        (updatePriceClickEvent)="updatePrice()"
+        (addStockClickEvent)="addStock()"
+        (adjustStockClickEvent)="adjustStock()"
+        ></usaha-form-info-product-ku>
+</div>

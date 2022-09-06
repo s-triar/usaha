@@ -2,7 +2,7 @@
     <usaha-search-form-list (searchValue)="searchValue($event)"></usaha-search-form-list>
     
     <mat-nav-list class="product-item-container" *ngIf="items.length>0 else nolist">
-      <a mat-list-item *ngFor="let item of items" class="product-item"> 
+      <a mat-list-item *ngFor="let item of items" class="product-item" [routerLink]="['./info',item.id]"> 
         <div class="product-item-layout">
           <div>{{item.barcode}}</div>
           <div>{{item.name}}</div>

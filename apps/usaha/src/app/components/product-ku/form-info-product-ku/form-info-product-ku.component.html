@@ -30,12 +30,16 @@
                 <mat-label>Isi Produk Dengan Kemasan Yang Lebih Kecil</mat-label>
                 <input readonly autocomplete="off" matInput placeholder="Isi Produk Dengan Kemasan Yang Lebih Kecil"  type="number" style="text-align: right;" min="1" [value]="dataGoods.contain">
             </mat-form-field>
-            <div class="mat-form-field">
+            <!-- <div class="mat-form-field">
                 <mat-checkbox [checked]="dataGoods.availableOnline" >Jual Online?</mat-checkbox>
-            </div>
+            </div> -->
+            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+                <mat-label>Jumlah Minimal Produk Di Dalam Stok</mat-label>
+                <input readonly [value]="dataGoods.theshold_stock" autocomplete="off" matInput placeholder="Jumlah Minimal Produk Di Dalam Stok"  type="number" style="text-align: right;" min="0" >
+            </mat-form-field>
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Barcode Produk Packaging Lebih Besar</mat-label>
-                <input readonly matInput placeholder="Barcode Produk Packaging Lebih Besar"  autocomplete="off" [value]="dataGoods.parent?.id">
+                <input readonly matInput placeholder="Barcode Produk Packaging Lebih Besar"  autocomplete="off" [value]="dataGoods.product_parent_barcode">
             </mat-form-field>
             <div class="group-product-container">
                 <div class="group-product-label">
@@ -63,23 +67,30 @@
         </div>
     </mat-tab>
     <mat-tab label="Harga">
+        <div>
+            <canvas baseChart height="100px"
+            [data]="priceLineData"
+            [options]="priceChartOption"
+            [type]="'line'"
+        ></canvas>
+        </div>
         <div class="form-input-container">
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Harga Jual Produk</mat-label>
                 <span matPrefix>Rp&nbsp;</span>
-                <app-input-currency readonly placeholder="Harga Jual Produk"  [value]="dataGoods.price"></app-input-currency>
+                <usaha-input-currency readonly placeholder="Harga Jual Produk"  [value]="lastPrice.price"></usaha-input-currency>
             </mat-form-field>
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Harga Jual Grosir Produk</mat-label>
                 <span matPrefix>Rp&nbsp;</span>
-                <app-input-currency readonly placeholder="Harga Jual Grosir Produk"  [value]="dataGoods.wholesalerPrice"></app-input-currency>
+                <usaha-input-currency readonly placeholder="Harga Jual Grosir Produk"  [value]="lastPrice.wholesale_price"></usaha-input-currency>
             </mat-form-field>
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Minimal Beli Produk Untuk Grosir</mat-label>
-                <input readonly type="number" matInput placeholder="Minimal Beli Produk Untuk Grosir"  min="1" style="text-align: right;" [value]="dataGoods.wholesalerMin">
+                <input readonly type="number" matInput placeholder="Minimal Beli Produk Untuk Grosir"  min="1" style="text-align: right;" [value]="lastPrice.min_wholesale_price">
             </mat-form-field>
             <div class="mat-form-field">
-                <mat-checkbox  [checked]="dataGoods.isWholesalerPriceAuto">Otomatis harga grosir jika minimal terpenuhi?</mat-checkbox>
+                <mat-checkbox  [checked]="lastPrice.is_auto_wholesale_price">Otomatis harga grosir jika minimal terpenuhi?</mat-checkbox>
             </div>
             <div class="form-action-container">
                 <button mat-raised-button color="primary" (click)="updatePrice()"><mat-icon>edit</mat-icon> Ubah Harga Jual Produk</button>
@@ -87,25 +98,25 @@
         </div>
     </mat-tab>
     <mat-tab label="Stok">
+        <div>
+            <canvas baseChart height="100px"
+                [data]="stockLineData"
+                [options]="stockChartOption"
+                [type]="'line'"
+            ></canvas>
+        </div>
         <div class="form-input-container">
+            
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
-                <mat-label>Harga Beli Produk Terakhir</mat-label>
+                <mat-label>Harga Beli Produk</mat-label>
                 <span matPrefix>Rp&nbsp;</span>
-                <app-input-currency readonly placeholder="Harga Beli Produk" [value]="dataGoods.buyPrice"></app-input-currency>
-            </mat-form-field>
-            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
-                <mat-label>Harga Beli Produk Dasar</mat-label>
-                <span matPrefix>Rp&nbsp;</span>
-                <app-input-currency readonly placeholder="Harga Beli Produk" [value]="dataGoods.baseBuyPrice"></app-input-currency>
+                <usaha-input-currency readonly placeholder="Harga Beli Produk" [value]="lastStock.price"></usaha-input-currency>
             </mat-form-field>
             <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
                 <mat-label>Jumlah Produk Di Dalam Stok Sekarang</mat-label>
-                <input readonly [value]="dataGoods.n" autocomplete="off" matInput placeholder="Jumlah Produk Di Dalam Stok Sekarang"  type="number" style="text-align: right;" min="0" >
+                <input readonly [value]="lastStock.n" autocomplete="off" matInput placeholder="Jumlah Produk Di Dalam Stok Sekarang"  type="number" style="text-align: right;" min="0" >
             </mat-form-field>
-            <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
-                <mat-label>Jumlah Minimal Produk Di Dalam Stok</mat-label>
-                <input readonly [value]="dataGoods.threshold" autocomplete="off" matInput placeholder="Jumlah Minimal Produk Di Dalam Stok"  type="number" style="text-align: right;" min="0" >
-            </mat-form-field>
+            
             <div class="form-action-container form-action-container-wrap">
                 <button mat-raised-button color="primary" (click)="adjustStock()"><mat-icon>edit</mat-icon> Adjust Stok Produk</button>
                 <button mat-raised-button color="primary" (click)="addStock()"><mat-icon>add</mat-icon> Tambah Stok Produk</button>

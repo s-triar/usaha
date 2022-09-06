@@ -66,7 +66,7 @@ export class LoginComponent implements OnInit {
           this._snackBar.open('Login is succeeded', undefined, {
             duration: 2 * 1000,
           });
-          this._backService.back(null, true);
+          this._backService.back('/', true);
         }else{
           this._snackBar.open('You are not found', undefined, {
             duration: 2 * 1000,

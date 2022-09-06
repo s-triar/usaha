@@ -21,7 +21,9 @@ export class ShopInterceptorInterceptor implements NestInterceptor {
 
     const { params, query, body, headers, user } = request;
     // const { url, method } = request.raw;
-    console.log(params, body, query, user);
+    // console.log(request);
+    
+    // console.log(params, body, query, user);
     
     if(params && params['shop_id']){
       const check = this._shopService.checkAuthorizationShop(user,params['shop_id']);
