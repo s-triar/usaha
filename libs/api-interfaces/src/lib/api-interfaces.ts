@@ -110,6 +110,23 @@ export interface RegisterProductDto{
   photo:string|null; // file name
 }
 
+export interface UpdateProductInfoDto{
+  id:string;
+  shop_id:string;
+  barcode:string;
+  name:string;
+  product_type_id: number;
+  product_group_ids:string[];
+  barcode_parent:string;
+  description:string;
+  contain:number;
+  photo_string:string|null;
+  photo_file:File|null;
+  photo:string|null;
+  new_product_group_ids:string[];
+  removed_product_group_ids:string[];
+}
+
 export interface RegisterProductStockDto{
   product_id:string;
   n:number;

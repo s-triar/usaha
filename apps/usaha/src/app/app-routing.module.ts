@@ -5,6 +5,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { UnAuthGuard } from './guards/un-auth.guard';
 import { ProductInfoResolver } from './modules/workspace/info-product/product-info.resolver';
 import { ShopTokenResolver } from './modules/workspace/shop-token.resolver';
+import { ProductUpdateInfoResolver } from './modules/workspace/update-info-product/product-update-info.resolver';
 
 const routes: Routes = [
     // {
@@ -103,6 +104,12 @@ const routes: Routes = [
         loadComponent: ()=> import('./modules/workspace/info-product/info-product.component').then(x=>x.InfoProductComponent),
         canActivate:[AuthGuard],
         resolve:{product:ProductInfoResolver},
+    },
+    {
+        path:'workspace/:shop_id/product/update-info/:product_id',
+        loadComponent: ()=> import('./modules/workspace/update-info-product/update-info-product.component').then(x=>x.UpdateInfoProductComponent),
+        canActivate:[AuthGuard],
+        resolve:{product:ProductUpdateInfoResolver},
     },
   ];
   

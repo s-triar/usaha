@@ -14,6 +14,7 @@ import {
   RegisterProductPriceDto,
   RegisterProductStockDto,
   ResultFindList,
+  UpdateProductInfoDto,
   UserLoggedIn,
 } from '@usaha/api-interfaces';
 import { DataSource, Like, Repository } from 'typeorm';
@@ -42,7 +43,7 @@ export class ProductService {
     shop_id: string,
     barcode: string
   ): Promise<Product> {
-    const shop_id_int = this._hasher.decrypt(shop_id);    
+    const shop_id_int = this._hasher.decrypt(shop_id);
     return await this._productRepository.findOneBy({
       barcode: barcode,
       shop_id: shop_id_int,
@@ -53,76 +54,82 @@ export class ProductService {
     shop_id: string,
     product_id: string
   ): Promise<ProductInfoDto> {
-    const shop_id_int = this._hasher.decrypt(shop_id);    
-    const product_id_int = this._hasher.decrypt(product_id);    
+    const shop_id_int = this._hasher.decrypt(shop_id);
+    const product_id_int = this._hasher.decrypt(product_id);
     const product = await this._productRepository.findOne({
-      where:{
-        shop_id:shop_id_int,
-        id:product_id_int
+      where: {
+        shop_id: shop_id_int,
+        id: product_id_int,
       },
-      relations:[
+      relations: [
         'product_type',
         'product_ins',
         'groups',
         'product_photos',
         'product_prices',
         'product_stocks',
-        'product_parent'
-      ]
+        'product_parent',
+      ],
     });
 
-    const prod_groups:ProductInfoGroupDto[]=product.groups.map(x=>{
-      return {
-        id:this._hasher.encrypt(x.id),
-        name:x.name,
-        shop_id:this._hasher.encrypt(x.shop_id)
-      }});
-    
-    const prod_ins: ProductInfoInDto[]=product.product_ins.map(x=>{
+    const prod_groups: ProductInfoGroupDto[] = product.groups.map((x) => {
       return {
         id: this._hasher.encrypt(x.id),
-        n:x.n,
-        created_at:x.created_at,
-        price:x.price,
-        from:x.from
-      }});
-    
-    const prod_photos: ProductInfoPhotoDto[]=product.product_photos.map(x=>{
-      return {
-        id:this._hasher.encrypt(x.id),
-        url:x.url
-      }
+        name: x.name,
+        shop_id: this._hasher.encrypt(x.shop_id),
+      };
     });
 
-    const prod_prices: ProductInfoPriceDto[]=product.product_prices.map(x=>{
+    const prod_ins: ProductInfoInDto[] = product.product_ins.map((x) => {
       return {
-        id:this._hasher.encrypt(x.id),
-        is_auto_wholesale_price: x.is_auto_wholesale_price,
-        min_wholesale_price: x.min_wholesale_price,
-        price:x.price,
-        wholesale_price:x.wholesale_price,
-        created_at:x.created_at
-      }
+        id: this._hasher.encrypt(x.id),
+        n: x.n,
+        created_at: x.created_at,
+        price: x.price,
+        from: x.from,
+      };
     });
+
+    const prod_photos: ProductInfoPhotoDto[] = product.product_photos.map(
+      (x) => {
+        return {
+          id: this._hasher.encrypt(x.id),
+          url: x.url,
+        };
+      }
+    );
+
+    const prod_prices: ProductInfoPriceDto[] = product.product_prices.map(
+      (x) => {
+        return {
+          id: this._hasher.encrypt(x.id),
+          is_auto_wholesale_price: x.is_auto_wholesale_price,
+          min_wholesale_price: x.min_wholesale_price,
+          price: x.price,
+          wholesale_price: x.wholesale_price,
+          created_at: x.created_at,
+        };
+      }
+    );
     const last_stock = product.product_stocks.sort(
-      (a,b)=>a.created_at.getTime()-b.created_at.getTime()
-    )[product.product_stocks.length-1];
-    const prod: ProductInfoDto ={
-      barcode:product.barcode,
-      shop_id:this._hasher.encrypt(product.shop_id),
+      (a, b) => a.created_at.getTime() - b.created_at.getTime()
+    )[product.product_stocks.length - 1];
+    const prod: ProductInfoDto = {
+      barcode: product.barcode,
+      shop_id: this._hasher.encrypt(product.shop_id),
       id: this._hasher.encrypt(product.id),
       contain: product.contain,
       description: product.description,
-      name:product.name,
-      product_parent_barcode:product.product_parent?.barcode ?? null,
-      product_type_id:product.product_type_id,
-      theshold_stock:product.threshold_stock,
-      stock:last_stock.n,
-      groups:prod_groups,
-      photos:prod_photos,
-      prices:prod_prices,
-      product_ins:prod_ins
-    }
+      name: product.name,
+      product_parent_barcode: product.product_parent?.barcode ?? null,
+      product_type_id: product.product_type_id,
+      theshold_stock: product.threshold_stock,
+      stock: last_stock.n,
+      groups: prod_groups,
+      photos: prod_photos,
+      prices: prod_prices,
+      product_ins: prod_ins,
+    };
     return prod;
   }
 
@@ -145,7 +152,7 @@ export class ProductService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    let error=null;
+    let error = null;
     try {
       const candidate: Product = {
         id: 0,
@@ -161,7 +168,9 @@ export class ProductService {
         created_at: new Date(),
         created_by_id: userLoggedIn.id,
       };
-      const new_product = await queryRunner.manager.getRepository(Product).save<Product>(candidate);
+      const new_product = await queryRunner.manager
+        .getRepository(Product)
+        .save<Product>(candidate);
       const new_product_id_str = this._hasher.encrypt(new_product.id);
       // add product in
       const data_product_in: RegisterProductInDto = {
@@ -221,7 +230,7 @@ export class ProductService {
       // you need to release a queryRunner which was manually instantiated
       await queryRunner.release();
     }
-    if(error){
+    if (error) {
       throw error;
     }
   }
@@ -292,6 +301,154 @@ export class ProductService {
     }
   }
 
+  async update(
+    userLoggedIn: UserLoggedIn,
+    data: UpdateProductInfoDto,
+    photo_data: RegisterProductPhotoDto
+  ): Promise<void> {
+    const parentProduct = await this.findProductWithBarcode(
+      data.barcode_parent,
+      data.shop_id
+    );
+    const product = await this.findProduct(data.shop_id, data.id);
+    const shop_id_int = this._hasher.decrypt(product.shop_id);
+    const product_id_int = this._hasher.decrypt(product.id);
+    await this._productRepository.update(
+      { id: product_id_int },
+      {
+        barcode: data.barcode,
+        contain: data.contain,
+        description: data.description,
+        name: data.name,
+        product_type_id: data.product_type_id,
+        product_parent_id: parentProduct.id,
+        updated_at: new Date(),
+        updated_by_id: userLoggedIn.id,
+      }
+    );
+    // add product photo
+    if (photo_data) {
+      photo_data.product_id = product.id;
+      await this._productPhotoService.create(userLoggedIn, photo_data);
+    }
+    // update group product
+    const prd = await this._productRepository.findOne({
+      where: {
+        shop_id: shop_id_int,
+        id: product_id_int,
+      },
+    });
+    for (
+      let index = 0;
+      index < data.removed_product_group_ids.length;
+      index++
+    ) {
+      const element = data.removed_product_group_ids[index];
+      await this._productGroupService.removeMemberProductGroup(element, prd);
+    }
+    for (let index = 0; index < data.new_product_group_ids.length; index++) {
+      const element = data.new_product_group_ids[index];
+      await this._productGroupService.addMemberProductGroup(element, prd);
+    }
+  }
+
+  async updateTransaction(
+    userLoggedIn: UserLoggedIn,
+    data: UpdateProductInfoDto,
+    photo_data: RegisterProductPhotoDto
+  ): Promise<void> {
+    const parentProduct = await this.findProductWithBarcode(
+      data.barcode_parent,
+      data.shop_id
+    );
+    const queryRunner = this._dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let error = null;
+    try {
+      const product = await this.findProduct(data.shop_id, data.id);
+      const shop_id_int = this._hasher.decrypt(product.shop_id);
+      const product_id_int = this._hasher.decrypt(product.id);
+      await this._productRepository.update(
+        { id: product_id_int },
+        {
+          barcode: data.barcode,
+          contain: data.contain,
+          description: data.description,
+          name: data.name,
+          product_type_id: data.product_type_id,
+          product_parent_id: parentProduct.id,
+          updated_at: new Date(),
+          updated_by_id: userLoggedIn.id,
+        }
+      );
+      await queryRunner.manager.getRepository(Product).update(
+        { id: product_id_int },
+        {
+          barcode: data.barcode,
+          contain: data.contain,
+          description: data.description,
+          name: data.name,
+          product_type_id: data.product_type_id,
+          product_parent_id: parentProduct.id,
+          updated_at: new Date(),
+          updated_by_id: userLoggedIn.id,
+        }
+      );
+      // add product photo
+      if (photo_data) {
+        photo_data.product_id = product.id;
+        await this._productPhotoService.createTransaction(
+          userLoggedIn,
+          photo_data,
+          queryRunner
+        );
+      }
+      // update group product
+      const prd = await this._productRepository.findOne({
+        where: {
+          shop_id: shop_id_int,
+          id: product_id_int,
+        },
+      });
+      for (
+        let index = 0;
+        index < data.removed_product_group_ids.length;
+        index++
+      ) {
+        const element = data.removed_product_group_ids[index];
+        await this._productGroupService.removeMemberProductGroupTransaction(
+          userLoggedIn,
+          element,
+          prd,
+          queryRunner
+        );
+      }
+      for (let index = 0; index < data.new_product_group_ids.length; index++) {
+        const element = data.new_product_group_ids[index];
+        await this._productGroupService.addMemberProductGroupTransaction(
+          userLoggedIn,
+          element,
+          prd,
+          queryRunner
+        );
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      // since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+      error = err;
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
+    if (error) {
+      throw error;
+    }
+  }
+
   async findProductsFromStore(
     store_id: string,
     name: string | null,
@@ -302,7 +459,7 @@ export class ProductService {
       name = '';
     }
     console.log(name, page, pageSize);
-    
+
     const store_id_int = this._hasher.decrypt(store_id);
     const [products, countProducts] =
       await this._productRepository.findAndCount({
@@ -319,8 +476,8 @@ export class ProductService {
         order: {
           name: 'ASC',
         },
-        skip: ((1*page) - 1) * (1*pageSize),
-        take: (1*pageSize),
+        skip: (1 * page - 1) * (1 * pageSize),
+        take: 1 * pageSize,
         relations: ['product_type', 'product_prices', 'product_stocks'],
       });
     const productsDto = products.map((item) => {
@@ -349,34 +506,32 @@ export class ProductService {
     page: number,
     pageSize: number
   ): Promise<ResultFindList<MemberProductGroupDto>> {
-    const product_group_id_int: number =
-      this._hasher.decrypt(product_group_id);
+    const product_group_id_int: number = this._hasher.decrypt(product_group_id);
     if (!name) {
       name = '';
     }
-    const [groups, countGroups] =
-      await this._productRepository.findAndCount({
-        where: [
-          {
-            groups:{
-              id: product_group_id_int
-            },
-            name: Like(`%${name}%`)
+    const [groups, countGroups] = await this._productRepository.findAndCount({
+      where: [
+        {
+          groups: {
+            id: product_group_id_int,
           },
-        ],
-        order: {
-          name:'ASC'
+          name: Like(`%${name}%`),
         },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        relations: ['groups'],
-      });
+      ],
+      order: {
+        name: 'ASC',
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      relations: ['groups'],
+    });
     const groupsDto = groups.map((x) => {
-        const temp: MemberProductGroupDto={
-          barcode:x.barcode,
-          id: this._hasher.encrypt(x.id),
-          name:x.name
-        }
+      const temp: MemberProductGroupDto = {
+        barcode: x.barcode,
+        id: this._hasher.encrypt(x.id),
+        name: x.name,
+      };
       return temp;
     });
     const result: ResultFindList<MemberProductGroupDto> = {

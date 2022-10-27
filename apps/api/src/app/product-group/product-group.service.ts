@@ -5,7 +5,7 @@ import {
   ResultFindList,
   UserLoggedIn,
 } from '@usaha/api-interfaces';
-import { Repository, Like, In } from 'typeorm';
+import { Repository, Like, In, DataSource, QueryRunner } from 'typeorm';
 import { Product, ProductGroup } from '../../typeorm/entities/application';
 import { HashIdService } from '../hash-id/hash-id.service';
 
@@ -14,7 +14,8 @@ export class ProductGroupService {
   constructor(
     @InjectRepository(ProductGroup)
     private _productGroupRepository: Repository<ProductGroup>,
-    private _hashIdService: HashIdService
+    private _hashIdService: HashIdService,
+    private _dataSource: DataSource
   ) {}
 
   async addMemberProductGroup(
@@ -30,6 +31,46 @@ export class ProductGroupService {
       { id: product_group_id_int },
       { members: group.members }
     );
+  }
+
+  async addMemberProductGroupTransaction(
+    userLoggedIn: UserLoggedIn,
+    product_group_id: string,
+    product: Product,
+    queryRunner: QueryRunner | null
+  ): Promise<void> {
+    const product_group_id_int = this._hashIdService.decrypt(product_group_id);
+    const group = await this._productGroupRepository.findOneBy({
+      id: product_group_id_int,
+    });
+    group.members.push(product);
+    if (queryRunner) {
+      await queryRunner.manager
+        .getRepository(ProductGroup)
+        .update({ id: product_group_id_int }, { members: group.members });
+      return;
+    }
+    queryRunner = this._dataSource.createQueryRunner();
+    let error = null;
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager
+        .getRepository(ProductGroup)
+        .update({ id: product_group_id_int }, { members: group.members });
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      // since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+      error = err;
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
+    if (error) {
+      throw error;
+    }
   }
 
   async removeMemberProductGroup(
@@ -49,6 +90,50 @@ export class ProductGroupService {
         { id: product_group_id_int },
         { members: group.members }
       );
+    }
+  }
+  async removeMemberProductGroupTransaction(
+    userLoggedIn: UserLoggedIn,
+    product_group_id: string,
+    product: Product,
+    queryRunner: QueryRunner | null
+  ): Promise<void> {
+    const product_group_id_int = this._hashIdService.decrypt(product_group_id);
+    const group = await this._productGroupRepository.findOneBy({
+      id: product_group_id_int,
+    });
+    const temp = group.members.findIndex((x) => {
+      x.id == product.id;
+    });
+    if (temp > -1) {
+      group.members.splice(temp, 1);
+      if (queryRunner) {
+        await queryRunner.manager
+          .getRepository(ProductGroup)
+          .update({ id: product_group_id_int }, { members: group.members });
+        return;
+      }
+      queryRunner = this._dataSource.createQueryRunner();
+      let error = null;
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        await queryRunner.manager
+          .getRepository(ProductGroup)
+          .update({ id: product_group_id_int }, { members: group.members });
+
+        await queryRunner.commitTransaction();
+      } catch (err) {
+        // since we have errors lets rollback the changes we made
+        await queryRunner.rollbackTransaction();
+        error = err;
+      } finally {
+        // you need to release a queryRunner which was manually instantiated
+        await queryRunner.release();
+      }
+      if (error) {
+        throw error;
+      }
     }
   }
 
@@ -129,5 +214,49 @@ export class ProductGroupService {
     };
     await this._productGroupRepository.save(candidate);
     // this._hashIdService.encrypt(new_product_group.id);
+  }
+
+  async createTransaction(
+    userLoggedIn: UserLoggedIn,
+    name: string,
+    shop_id: string,
+    description: string | null,
+    queryRunner: QueryRunner | null
+  ): Promise<void> {
+    const candidate: ProductGroup = {
+      id: 0,
+      description: description,
+      name: name,
+      shop_id: this._hashIdService.decrypt(shop_id),
+      created_at: new Date(),
+      created_by_id: userLoggedIn.id,
+    };
+    if (queryRunner) {
+      await queryRunner.manager
+        .getRepository(ProductGroup)
+        .save<ProductGroup>(candidate);
+      return;
+    }
+    queryRunner = this._dataSource.createQueryRunner();
+    let error = null;
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager
+        .getRepository(ProductGroup)
+        .save<ProductGroup>(candidate);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      // since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+      error = err;
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
+    if (error) {
+      throw error;
+    }
   }
 }

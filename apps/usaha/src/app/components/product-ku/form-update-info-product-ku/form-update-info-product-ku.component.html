@@ -7,22 +7,22 @@
         <mat-label>Barcode Produk</mat-label>
         <input matInput placeholder="Barcode Produk" [disabled]="true" [value]="dataGoods.barcode" autocomplete="off">
         <!-- <button matSuffix mat-icon-button color="primary" (click)="openScanner()" type="button"><i class="fas fa-qrcode"></i></button> -->
-        <mat-hint class="color-warn" *ngIf="(BarcodeProduct?.dirty || BarcodeProduct?.touched) && BarcodeProduct?.errors?.required">Barcode harus diisi.</mat-hint>
-        <mat-hint class="color-warn" *ngIf="BarcodeProduct?.errors?.duplicateBarcodeError">Barang dengan barcode tersebut sudah ada.</mat-hint>
-        <mat-hint class="color-warn" *ngIf="BarcodeProduct?.errors?.maxlength">Maksimal panjang barcode 255 karakter.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(BarcodeProduct?.dirty || BarcodeProduct?.touched) && BarcodeProduct?.hasError('required')">Barcode harus diisi.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="BarcodeProduct?.hasError('')duplicateBarcodeError">Barang dengan barcode tersebut sudah ada.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="BarcodeProduct?.hasError('')maxlength">Maksimal panjang barcode 255 karakter.</mat-hint>
     </mat-form-field>
     <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
         <mat-label>Nama Produk</mat-label>
         <input matInput placeholder="Nama Produk" formControlName="Name" autocomplete="off">
-        <mat-hint class="color-warn" *ngIf="(NameProduct?.dirty || NameProduct?.touched) && NameProduct?.errors?.required">Nama produk varian harus diisi.</mat-hint>
-        <mat-hint class="color-warn" *ngIf="NameProduct?.errors?.maxlength">Maksimal panjang nama produk 255 karakter.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(NameProduct?.dirty || NameProduct?.touched) && NameProduct?.hasError('required')">Nama produk varian harus diisi.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="NameProduct?.hasError('maxlength')">Maksimal panjang nama produk 255 karakter.</mat-hint>
     </mat-form-field>
     <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always" >
         <mat-label>Kategori Produk</mat-label>
         <mat-select formControlName="GoodsTypeId" #selectGoodType (selectionChange)="selectGoodsType($event)">
-            <mat-option *ngFor="let item of GoodsTypes$ ; let i = index" [value]="item.id" [ngStyle]="GoodsTypeIdProduct?.value !==null && i ==0 ? {'display':'none'}:{}">{{item.name}}</mat-option>
+            <mat-option *ngFor="let item of GoodsTypes$ ; let i = index" [value]="item.id" [ngStyle]="GoodsTypeIdProduct?.value !==null && i === 0 ? {'display':'none'}:{}">{{item.name}}</mat-option>
         </mat-select>
-        <mat-hint class="color-warn" *ngIf="(GoodsTypeIdProduct?.dirty || GoodsTypeIdProduct?.touched) && GoodsTypeIdProduct?.errors?.required">Kategori produk harus diisi.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(GoodsTypeIdProduct?.dirty || GoodsTypeIdProduct?.touched) && GoodsTypeIdProduct?.hasError('required')">Kategori produk harus diisi.</mat-hint>
     </mat-form-field>
     <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
         <mat-label>Deskripsi Produk Varian</mat-label>
@@ -31,13 +31,13 @@
         MatTextareaAutosize cdkTextareaAutosize="true" cdkAutosizeMinRows="4" cdkAutosizeMaxRows="12"
         formControlName="Description"
         ></textarea>
-        <mat-hint class="color-warn" *ngIf="DescriptionProduct?.errors?.maxlength">Maksimal panjang deskripsi produk 255 karakter.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="DescriptionProduct?.hasError('maxlength')">Maksimal panjang deskripsi produk 255 karakter.</mat-hint>
     </mat-form-field>
     <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
         <mat-label>Isi Produk Dengan Kemasan Yang Lebih Kecil</mat-label>
         <input autocomplete="off" matInput placeholder="Isi Produk Dengan Kemasan Yang Lebih Kecil" formControlName="Contain" type="number" style="text-align: right;" min="1" >
-        <mat-hint class="color-warn" *ngIf="(ContainProduct?.dirty || ContainProduct?.touched) && ContainProduct?.errors?.required">Isi produk dengan kemasan yang paling kecil harus diisi.</mat-hint>
-        <mat-hint class="color-warn" *ngIf="(ContainProduct?.dirty || ContainProduct?.touched) && ContainProduct?.errors?.min">Nilai minimal adalah 1.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(ContainProduct?.dirty || ContainProduct?.touched) && ContainProduct?.hasError('required')">Isi produk dengan kemasan yang paling kecil harus diisi.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(ContainProduct?.dirty || ContainProduct?.touched) && ContainProduct?.hasError('min')">Nilai minimal adalah 1.</mat-hint>
     </mat-form-field>
     <div class="mat-form-field">
         <mat-checkbox formControlName="AvailableOnline"  >Jual Online?</mat-checkbox>
@@ -45,7 +45,7 @@
     <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
         <mat-label>Barcode Produk Packaging Lebih Besar</mat-label>
         <input matInput placeholder="Barcode Produk Packaging Lebih Besar" formControlName="ParentBarcode" autocomplete="off">
-        <mat-hint class="color-warn" *ngIf="ParentBarcodeProduct?.errors?.maxlength">Maksimal panjang nama produk 255 karakter.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="ParentBarcodeProduct?.hasError('maxlength')">Maksimal panjang nama produk 255 karakter.</mat-hint>
     </mat-form-field>
     <div class="group-product-container">
         <div class="group-product-label">

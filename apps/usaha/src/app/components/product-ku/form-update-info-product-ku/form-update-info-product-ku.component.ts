@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -12,168 +12,179 @@ import {
   FormArray,
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatOptionModule } from '@angular/material/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+// import { MatOptionModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSelect, MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatTabsModule } from '@angular/material/tabs';
+// import { MatTabsModule } from '@angular/material/tabs';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { switchMap, of, throwIfEmpty, filter } from 'rxjs';
-import { PRODUCT_DEFAULT } from 'src/app/application/constant';
-import { CustomUploadFileEventChange } from 'src/app/application/types';
-import { InfoOfGoodsForUpdatingDto, GoodsTypeDto, MyGoodsGroupsListItemDto, MyGoodsGroupsListMemberItemDto } from 'src/app/domain/backend/Dtos';
-import { GoodsTypeService } from 'src/app/infrastructure/backend/goods-type.service';
-import { GoodsService } from 'src/app/infrastructure/backend/goods.service';
-import { ButtonUploadFileComponent } from 'src/app/ui/components/form/button-upload-file/button-upload-file.component';
-import { PopUpNotifService } from 'src/app/ui/components/pop-up/pop-up-notif/pop-up-notif.service';
-import { ScannerDialogComponent } from 'src/app/ui/components/pop-up/scanner-dialog/scanner-dialog.component';
-import { GroupProductKuDialogComponent } from '../group-product-ku-dialog/group-product-ku-dialog.component';
+import { switchMap, of,  filter } from 'rxjs';
+import { PRODUCT_DEFAULT } from '../../../constants';
+import { CustomUploadFileEventChange } from '../../../types';
+import { PopUpNotifService } from '../../pop-up/pop-up-notif/pop-up-notif.service';
+// import { ScannerDialogComponent } from 'src/app/ui/components/pop-up/scanner-dialog/scanner-dialog.component';
+import { CurrencyConversionService } from '../../../services/currency-conversion.service';
+import { ProductTypeService } from '../../../services/product-type.service';
+import { ProductService } from '../../../services/product.service';
+import { DuplicateBarcodeValidator } from '../../../validators/DuplicateBarcodeValidator';
+import { InputCurrencyComponent } from '../../form/input-currency/input-currency.component';
+import { GroupProductKuDialogComponent, GroupProductKuDialogComponentData } from '../group-product-ku-dialog/group-product-ku-dialog.component';
 import { MemberGroupProductKuDialogComponent } from '../member-group-product-ku-dialog/member-group-product-ku-dialog.component';
+import { MatStepperModule } from '@angular/material/stepper';
+import { ButtonUploadFileComponent } from '../../form/button-upload-file/button-upload-file.component';
+import { MyShopProductGroupDto, ProductInfoUpdateDto, ProductTypeDto } from '@usaha/api-interfaces';
+import { ScannerDialogComponent } from '../../pop-up/scanner-dialog/scanner-dialog.component';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-form-update-info-product-ku',
+  selector: 'usaha-form-update-info-product-ku',
   templateUrl: './form-update-info-product-ku.component.html',
   styleUrls: ['./form-update-info-product-ku.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatTabsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule,
     MatListModule,
-    MatIconModule,
-    MatOptionModule,
     MatSelectModule,
+    MatButtonModule,
+    MatStepperModule,
+    MatIconModule,
     ButtonUploadFileComponent,
-  ]
+    FormsModule,
+    InputCurrencyComponent,
+    MatCheckboxModule
+  ],
+  providers:[CurrencyConversionService, CurrencyPipe]
+
 })
 export class FormUpdateInfoProductKuComponent implements OnInit {
   @Input() idUsaha!: string;
-  @Input() dataGoods!: InfoOfGoodsForUpdatingDto;
-  @Output() Submitted: EventEmitter<string> = new EventEmitter<string>();
+  @Input() dataGoods!: ProductInfoUpdateDto;
+  @Output() Submitted: EventEmitter<void> = new EventEmitter<void>();
   @Output() Canceled: EventEmitter<void> = new EventEmitter<void>();
 
   @ViewChild('selectGoodType', { static: true }) selectGoodType!: MatSelect;
   defaultImg: string = PRODUCT_DEFAULT;
   url: string | null | ArrayBuffer = null;
   urlImg: string | null | ArrayBuffer = null;
-  GoodsTypes$Lama!: GoodsTypeDto[] | null | undefined;
-  GoodsTypes$!: GoodsTypeDto[];
-  GoodsTypesData!: GoodsTypeDto[];
-  goodTypeReset: GoodsTypeDto = {
+  GoodsTypesLama!: ProductTypeDto[] | null | undefined;
+  GoodsTypes!: ProductTypeDto[];
+  GoodsTypesData!: ProductTypeDto[];
+  goodTypeReset: ProductTypeDto = {
     id: -1,
     name: 'Reset',
-    parentGoodsTypeId: null,
-    subGoodsTypes: null,
+    parent_id:0,
   };
-  goodTypeBack: GoodsTypeDto = {
+  goodTypeBack: ProductTypeDto = {
     id: -2,
     name: 'Kembali ke sebelumnya',
-    parentGoodsTypeId: null,
-    subGoodsTypes: null,
+    parent_id:0,
   };
   temporarySelectedGoodType!: number | null | undefined;
-  tempSelectedGoodsGroup: MyGoodsGroupsListItemDto[] = [];
-  form: FormGroup = this.fb.group({
-    Id: [null, [Validators.required]],
-    // Barcode: [
-    //   null,
-    //   [Validators.required, Validators.maxLength(255)],
-    //   [ DuplicateBarcodeValidator.validate(this.goodsService)]
-    // ],
-    Name: [null, [Validators.required, Validators.maxLength(255)]],
-    Description: [null],
-    Photo: [null],
-    PhotoFile: [null],
-    PhotoString: [null],
-    GoodsTypeId: [null, [Validators.required]],
-    Contain: [1, [Validators.required, Validators.min(1)]],
-    AvailableOnline: [false],
-    ParentBarcode: [null, [Validators.maxLength(255)]],
-    // GoodsGroups: [this.fb.array([])],
-    AddGoodsGroups: [this.fb.array([])],
-    RemoveGoodsGroups: [this.fb.array([])]
+  tempSelectedGoodsGroup: MyShopProductGroupDto[] = [];
+  form: FormGroup = this.fb.nonNullable.group({
+        id: this.fb.nonNullable.control(0,{validators:[Validators.required]}),
+        shop_id: this.fb.nonNullable.control(this.idUsaha,{validators:[Validators.required]}),
+        barcode:this.fb.nonNullable.control('',{
+          validators:[Validators.required, Validators.maxLength(255)],
+          asyncValidators:[DuplicateBarcodeValidator.validate(this.productService, this.idUsaha)]
+        }),
+        name:this.fb.nonNullable.control('', {validators:[Validators.required, Validators.maxLength(255)]}),
+        product_type_id: this.fb.nonNullable.control(0,{validators:[Validators.required]}),
+        product_group_ids: this.fb.control(this.fb.array([])),
+        barcode_parent: this.fb.control(null,{validators:[Validators.maxLength(255)]}),
+        description: this.fb.control('',{validators:[Validators.maxLength(255)]}),
+        contain: this.fb.nonNullable.control(1, {validators:[Validators.required, Validators.min(1)]}),
+        photo_string:this.fb.control(null),
+        photo_file:this.fb.control(null),
+        photo:this.fb.control(null),
+        new_product_group_ids: this.fb.control(this.fb.array([])),
+        removed_product_group_ids: this.fb.control(this.fb.array([])),
   });
-  get NameProduct(): AbstractControl | null {
-    return this.form.get('Name');
+  
+  get NameProduct(): AbstractControl|null{
+    return this.form.get('name');
   }
-  get DescriptionProduct(): AbstractControl | null {
-    return this.form.get('Description');
+  get DescriptionProduct(): AbstractControl|null{
+    return this.form.get('description');
   }
-  get BarcodeProduct(): AbstractControl | null {
-    return this.form.get('Barcode');
+  get BarcodeProduct(): AbstractControl|null{
+    return this.form.get('barcode');
   }
-  get ContainProduct(): AbstractControl | null {
-    return this.form.get('Contain');
+  get ContainProduct(): AbstractControl|null{
+    return this.form.get('contain');
   }
-  get AvailableOnlineProduct(): AbstractControl | null {
-    return this.form.get('AvailableOnline');
+  // get AvailableOnlineProduct(): AbstractControl|null{
+  //   return this.form.get('AvailableOnline');
+  // }
+  get PhotoProduct(): AbstractControl|null{
+    return this.form.get('photo');
   }
-  get PhotoProduct(): AbstractControl | null {
-    return this.form.get('Photo');
+  get PhotoFileProduct(): AbstractControl|null{
+    return this.form.get('photo_file');
   }
-  get PhotoFileProduct(): AbstractControl | null {
-    return this.form.get('PhotoFile');
+  get PhotoStringProduct(): AbstractControl|null{
+    return this.form.get('photo_string');
   }
-  get PhotoStringProduct(): AbstractControl | null {
-    return this.form.get('PhotoString');
+  get GoodsTypeIdProduct(): AbstractControl|null{
+    return this.form.get('product_type_id');
   }
-  get GoodsTypeIdProduct(): AbstractControl | null {
-    return this.form.get('GoodsTypeId');
+  get ParentBarcodeProduct(): AbstractControl|null{
+    return this.form.get('barcode_parent');
   }
-  get ParentBarcodeProduct(): AbstractControl | null {
-    return this.form.get('ParentBarcode');
+  get GoodsGroupProduct(): FormArray{
+    return this.form.get('product_group_ids') as FormArray;
   }
-  get AddGoodsGroupProduct(): FormArray {
-    return this.form.controls.AddGoodsGroups as FormArray;
+  get AddGoodsGroups(): FormArray{
+    return this.form.get('new_product_group_ids') as FormArray;
   }
-  get RemoveGoodsGroups(): FormArray {
-    return this.form.controls.RemoveGoodsGroups as FormArray;
+  get RemoveGoodsGroups(): FormArray{
+    return this.form.get('removed_product_group_ids') as FormArray;
   }
+
+
 
   constructor(
     private fb: FormBuilder,
-    private readonly goodsService: GoodsService,
-    private readonly goodsTypeService: GoodsTypeService,
+    private readonly productService: ProductService,
+    private readonly productTypeService: ProductTypeService,
     private dialog: MatDialog,
     private notifService: PopUpNotifService
   ) {}
 
   ngOnInit(): void {
+    
     this.initForm();
-    this.goodsTypeService.GoodsTypes$.pipe(
-      untilDestroyed(this),
-      filter(res => res.length > 0)
-    ).subscribe(
-      (res) => {
-        if (res.length > 0) {
-          this.GoodsTypesData = res;
-          const temp = this.GoodsTypesData.find(
-            (x) => x.id === this.dataGoods.goodsTypeId
+    this.productTypeService.getAllProductType().pipe(untilDestroyed(this)).subscribe(res => {
+      if (res.length > 0){
+        this.GoodsTypesData = res;
+        this.GoodsTypes = this.GoodsTypesData.filter(x=>x.parent_id===0);
+        const temp = this.GoodsTypesData.find(
+          (x) => x.id === this.dataGoods.product_type_id
+        );
+        this.GoodsTypes = res.filter((y) =>
+            temp?.parent_id
+              ? y.parent_id === temp?.parent_id
+              : y.parent_id === null
           );
-          this.GoodsTypes$ = res.filter((y) =>
-            temp?.parentGoodsTypeId
-              ? y.parentGoodsTypeId === temp?.parentGoodsTypeId
-              : y.parentGoodsTypeId === null
-          );
-          if (temp?.parentGoodsTypeId) {
-            this.temporarySelectedGoodType = temp?.parentGoodsTypeId;
-            this.GoodsTypes$.push(this.goodTypeBack);
-            this.GoodsTypes$.push(this.goodTypeReset);
+          if (temp?.parent_id) {
+            this.temporarySelectedGoodType = temp?.parent_id;
+            this.GoodsTypes.push(this.goodTypeBack);
+            this.GoodsTypes.push(this.goodTypeReset);
           }
-        }
       }
-    );
+    });
     console.log(this.GoodsTypesData);
   }
   cancel(): void {
@@ -193,10 +204,10 @@ export class FormUpdateInfoProductKuComponent implements OnInit {
       return;
     }
     const temp = this.form.value;
-    temp.AddGoodsGroups = this.AddGoodsGroupProduct.value.value ?? [];
-    temp.RemoveGoodsGroups = this.RemoveGoodsGroups.value.value ?? [];
+    // temp.AddGoodsGroups = this.AddGoodsGroupProduct.value.value ?? [];
+    // temp.RemoveGoodsGroups = this.RemoveGoodsGroups.value.value ?? [];
     console.log(temp);
-    this.goodsService
+    this.productService
       .update(temp)
       .pipe(
         untilDestroyed(this),
@@ -211,45 +222,41 @@ export class FormUpdateInfoProductKuComponent implements OnInit {
             .pipe(switchMap((y) => of(x)))
         )
       )
-      .subscribe((x: string) => this.Submitted.emit(x));
+      .subscribe((x: string) => this.Submitted.emit());
   }
   initForm(): void {
-    this.form = this.fb.group({
-      Id: [this.dataGoods.id, [Validators.required]],
-      Name: [
-        this.dataGoods.name,
-        [Validators.required, Validators.maxLength(255)],
-      ],
-      Description: [this.dataGoods.description],
-      Photo: [null],
-      PhotoFile: [null],
-      PhotoString: [null],
-      GoodsTypeId: [this.dataGoods.goodsTypeId, [Validators.required]],
-      Contain: [
-        this.dataGoods.contain,
-        [Validators.required, Validators.min(1)],
-      ],
-      AvailableOnline: [this.dataGoods.availableOnline],
-      ParentBarcode: [
-        this.dataGoods.parent?.barcode,
-        [Validators.maxLength(255)],
-      ],
-      AddGoodsGroups: [this.fb.array([])],
-      RemoveGoodsGroups: [this.fb.array([])]
-    });
+    this.form = this.fb.nonNullable.group({
+        id: this.fb.nonNullable.control(this.dataGoods.id,{validators:[Validators.required]}),
+        shop_id: this.fb.nonNullable.control(this.idUsaha,{validators:[Validators.required]}),
+        barcode:this.fb.nonNullable.control(this.dataGoods.barcode,{
+          validators:[Validators.required, Validators.maxLength(255)],
+          asyncValidators:[DuplicateBarcodeValidator.validate(this.productService, this.idUsaha)]
+        }),
+        name:this.fb.nonNullable.control(this.dataGoods.name, {validators:[Validators.required, Validators.maxLength(255)]}),
+        product_type_id: this.fb.nonNullable.control(this.dataGoods.product_type_id,{validators:[Validators.required]}),
+        product_group_ids: this.fb.control(this.fb.array([])),
+        barcode_parent: this.fb.control(this.dataGoods.product_parent_barcode,{validators:[Validators.maxLength(255)]}),
+        description: this.fb.control(this.dataGoods.description,{validators:[Validators.maxLength(255)]}),
+        contain: this.fb.nonNullable.control(this.dataGoods.contain, {validators:[Validators.required, Validators.min(1)]}),
+        photo_string:this.fb.control(null),
+        photo_file:this.fb.control(null),
+        photo:this.fb.control(null),
+        new_product_group_ids: this.fb.control(this.fb.array([])),
+        removed_product_group_ids: this.fb.control(this.fb.array([])),
+  });
 
     this.tempSelectedGoodsGroup = this.dataGoods.groups.map((x) => {
-      const r: MyGoodsGroupsListItemDto = {
+      const r: MyShopProductGroupDto = { //MyGoodsGroupsListItemDto
         id: x.id,
         name: x.name,
-        members: x.members.map((y) => {
-          const s: MyGoodsGroupsListMemberItemDto = {
-            id: y.id,
-            name: y.name,
-            photoUrl: null,
-          };
-          return s;
-        }),
+        // members: x.members.map((y) => {
+        //   const s: MyGoodsGroupsListMemberItemDto = {
+        //     id: y.id,
+        //     name: y.name,
+        //     photoUrl: null,
+        //   };
+        //   return s;
+        // }),
       };
       return r;
     });
@@ -286,146 +293,96 @@ export class FormUpdateInfoProductKuComponent implements OnInit {
       this.PhotoStringProduct?.updateValueAndValidity();
     }
   }
-  selectGoodsType(event: MatSelectChange): void {
-    const val = event.value as string;
+  selectGoodsType(event: MatSelectChange): void{
+    const val  = event.value as string;
     const v = parseInt(val, 10);
-    this.changeGoodsType(v);
-  }
-  changeGoodsType(v: number): void {
-    const temp = this.GoodsTypesData.find((x) => x.id === v);
+    const temp = this.GoodsTypesData.find(x => x.id === v);
+    const temp_children = this.GoodsTypesData.filter(x => x.parent_id === temp?.id);
+    console.log(temp_children);
+    
     // let tempArr: GoodsTypeDto[] = [];
-    if (v === this.goodTypeBack.id) {
-      const t = this.GoodsTypesData.find(
-        (x) => x.id === this.temporarySelectedGoodType
-      );
-      if (t?.parentGoodsTypeId === null) {
-        // dipuncak
-        const a = this.GoodsTypesData.filter(
-          (y) => y.parentGoodsTypeId === null
-        );
-        this.GoodsTypes$ = Array.from(a);
+    if (v === this.goodTypeBack.id){
+      const t = this.GoodsTypesData.find(x => x.id === this.temporarySelectedGoodType);
+      if (t?.parent_id === 0){ // dipuncak
+        const a = this.GoodsTypesData.filter(y => y.parent_id === 0);
+        this.GoodsTypes = Array.from(a);
         this.temporarySelectedGoodType = null;
-      } else {
-        const t2 = this.GoodsTypesData.find(
-          (x) => x.id === t?.parentGoodsTypeId
-        );
+      }else{
+        const t2 = this.GoodsTypesData.find(x => x.id === t?.parent_id);
+        const t2_children = this.GoodsTypesData.filter(x => x.parent_id === t2?.id);
+
         this.temporarySelectedGoodType = t2?.id;
-        if (
-          t2?.subGoodsTypes !== null &&
-          t2?.subGoodsTypes !== undefined &&
-          t2.subGoodsTypes.length > 0
-        ) {
-          const temp2 = this.GoodsTypesData.find(
-            (x) => x.id === this.temporarySelectedGoodType
-          );
-          const a = t2?.subGoodsTypes;
-          this.GoodsTypes$ = Array.from(a);
-          if (
-            temp2?.subGoodsTypes !== null &&
-            temp2?.subGoodsTypes !== undefined
-          ) {
-            this.GoodsTypes$.unshift(temp2);
+        if (t2_children !== null && t2_children !== undefined && t2_children.length > 0){
+          const temp2 = this.GoodsTypesData.find(x => x.id === this.temporarySelectedGoodType);
+          const temp2_children = this.GoodsTypesData.filter(x => x.parent_id === temp2?.id);
+          const a = t2_children;
+          this.GoodsTypes = Array.from(a);
+          if (temp2_children !== null && temp2_children !== undefined){
+            this.GoodsTypes.unshift(temp2!);
           }
-          this.GoodsTypes$.push(this.goodTypeBack);
-          this.GoodsTypes$.push(this.goodTypeReset);
+          this.GoodsTypes.push(this.goodTypeBack);
+          this.GoodsTypes.push(this.goodTypeReset);
         }
       }
-      this.GoodsTypeIdProduct?.setValue(this.temporarySelectedGoodType);
+      this.form.get('product_type_id')?.setValue(this.temporarySelectedGoodType);
       setTimeout(() => {
         this.selectGoodType.open();
       }, 100);
-    } else if (v === this.goodTypeReset.id) {
-      const a = this.GoodsTypesData.filter((y) => y.parentGoodsTypeId === null);
-      this.GoodsTypes$ = Array.from(a);
+    }
+    else if (v === this.goodTypeReset.id){
+      const a = this.GoodsTypesData.filter(y => y.parent_id === 0);
+      this.GoodsTypes = Array.from(a);
       this.temporarySelectedGoodType = null;
-      this.GoodsTypeIdProduct?.setValue(this.temporarySelectedGoodType);
+      this.form.get('product_type_id')?.setValue(this.temporarySelectedGoodType);
       setTimeout(() => {
         this.selectGoodType.open();
       }, 100);
-    } else if (
-      temp?.subGoodsTypes !== null &&
-      temp?.subGoodsTypes !== undefined &&
-      temp.subGoodsTypes.length > 0
-    ) {
+    }
+    else if (temp_children !== null && temp_children !== undefined && temp_children.length > 0){
       this.temporarySelectedGoodType = v;
-      const a = temp?.subGoodsTypes;
-      this.GoodsTypes$ = Array.from(a);
-      this.GoodsTypes$.unshift(temp);
-      this.GoodsTypes$.push(this.goodTypeBack);
-      this.GoodsTypes$.push(this.goodTypeReset);
+      const a = temp_children;
+      this.GoodsTypes = Array.from(a);
+      this.GoodsTypes.unshift(temp!);
+      this.GoodsTypes.push(this.goodTypeBack);
+      this.GoodsTypes.push(this.goodTypeReset);
       setTimeout(() => {
         this.selectGoodType.open();
       }, 100);
     }
-    this.GoodsTypeIdProduct?.updateValueAndValidity();
+    this.form.get('product_type_id')?.updateValueAndValidity();
   }
-  openDialogGroup(): void {
-    this.dialog
-      .open(GroupProductKuDialogComponent, {
-        data: this.tempSelectedGoodsGroup,
-        hasBackdrop: true,
+  openDialogGroup(): void{
+    const data_dialog:GroupProductKuDialogComponentData={
+      groupSelected: this.tempSelectedGoodsGroup,
+      id_usaha:this.idUsaha
+    }
+    this.dialog.open(GroupProductKuDialogComponent,
+      {data: data_dialog, hasBackdrop: true, maxWidth: '480px', width: '80%', disableClose: true })
+    .afterClosed().subscribe((res: MyShopProductGroupDto[]) => {
+      res = res.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+      this.tempSelectedGoodsGroup = res;
+      if (this.form.get('product_group_ids')?.value.length > 0){
+        this.form.get('product_group_ids')?.value.clear();
+      }
+      res.map(x => x.id).forEach(x => this.form.get('product_group_ids')?.value.push(this.fb.control(x)));
+    });
+  }
+  removeGroup(id: string): void{
+    const idx = this.tempSelectedGoodsGroup.findIndex(x => x.id === id);
+    this.tempSelectedGoodsGroup.splice(idx, 1);
+    // const idx2 = this.form.get('product_group_ids')?.controls.findIndex(x => x.value === id);
+    this.form.get('product_group_ids')?.value.removeAt(idx);
+  }
+  showGroupMemberDialog(id: string): void{
+    const temp = this.tempSelectedGoodsGroup.find(x => x.id === id);
+    this.dialog.open(MemberGroupProductKuDialogComponent,
+      {
+        // data: temp && temp.members.length > 0 ? temp.members : [],
+        data: id,
         maxWidth: '480px',
         width: '80%',
-        disableClose: true,
+        disableClose: true
       })
-      .afterClosed()
-      .subscribe((res: MyGoodsGroupsListItemDto[]) => {
-        res = res.sort((a, b) =>
-          a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-        );
-        this.tempSelectedGoodsGroup = res;
-        if (this.AddGoodsGroupProduct.value.length > 0) {
-          this.AddGoodsGroupProduct.value.clear();
-        }
-        if (this.RemoveGoodsGroups.value.length > 0) {
-          this.RemoveGoodsGroups.value.clear();
-        }
-        res
-          .map((x) => x.id)
-          .forEach((id) => {
-            const idx = this.dataGoods.groups.findIndex((x) => x.id === id);
-            if (idx === -1){
-              this.AddGoodsGroupProduct.value.push(this.fb.control(id));
-            }
-          });
-        this.dataGoods.groups
-          .map((x) => x.id)
-          .forEach(id => {
-            const idx = res.findIndex((x) => x.id === id);
-            if (idx === -1){
-              this.RemoveGoodsGroups.value.push(this.fb.control(id));
-            }
-          });
-        this.form.markAsDirty();
-        this.form.updateValueAndValidity();
-      });
-  }
-  removeGroup(id: string): void {
-    const idx = this.dataGoods.groups.findIndex((x) => x.id === id);
-    if (idx === -1){
-      this.tempSelectedGoodsGroup.splice(idx, 1);
-    }
-    else{
-      this.tempSelectedGoodsGroup.splice(idx, 1);
-      this.RemoveGoodsGroups.value.push(this.fb.control(id));
-    }
-    // const idx2 = this.GoodsGroupProduct.controls.findIndex(x => x.value === id);
-    // this.GoodsGroupProduct.value.removeAt(idx);
-    this.form.markAsDirty();
-    this.form.updateValueAndValidity();
-  }
-  showGroupMemberDialog(id: string): void {
-    const temp = this.tempSelectedGoodsGroup.find((x) => x.id === id);
-    this.dialog
-      .open(MemberGroupProductKuDialogComponent, {
-        data: temp && temp.members.length > 0 ? temp.members : [],
-        maxWidth: '480px',
-        width: '80%',
-        disableClose: true,
-      })
-      .afterClosed()
-      .subscribe((x) => {
-
-      });
+      .afterClosed().subscribe();
   }
 }

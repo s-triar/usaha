@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MemberProductGroupDto, ProductInfoDto, ProductOfMyShopListItemDto, RegisterProductDto, RequestFindList, ResultFindList } from '@usaha/api-interfaces';
+import { MemberProductGroupDto, ProductInfoDto, ProductOfMyShopListItemDto, RegisterProductDto, RequestFindList, ResultFindList, UpdateProductInfoDto } from '@usaha/api-interfaces';
 import { Observable } from 'rxjs';
 import { FormConversionService } from './form-conversion.service';
 
@@ -38,5 +38,10 @@ export class ProductService {
 
   getInfoProduct(shop_id:string, product_id:string):Observable<ProductInfoDto>{
     return this.http.get<ProductInfoDto>(`/api/product/info-product/${shop_id}/${product_id}`);
+  }
+
+  updateProduct(data: UpdateProductInfoDto):Observable<void>{
+    const formData = this.convertFormData.convertModelToFormData(data, null, null);
+    return this.http.post<void>('/api/product/update-product',formData);
   }
 }

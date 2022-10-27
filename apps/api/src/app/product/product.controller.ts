@@ -23,6 +23,7 @@ import {
   RegisterProductPhotoDto,
   RequestFindList,
   ResultFindList,
+  UpdateProductInfoDto,
 } from '@usaha/api-interfaces';
 import { AuthUserGuard } from '../auth-user/auth-user.guard';
 import { ShopInterceptorInterceptor } from '../shop-interceptor/shop-interceptor.interceptor';
@@ -127,6 +128,41 @@ export class ProductController {
     return await this._productService.findProduct(shop_id,product_id);
   }
   // TODO update a product
+
+  @UseGuards(AuthUserGuard)
+  @UseInterceptors(ShopInterceptorInterceptor)
+  @UseInterceptors(FileInterceptor('photo_file',{preservePath:true,storage:diskStorage({
+    destination:'./dist/apps/api/assets/uploads/product',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    filename: (req: any, file: any, cb: any) => {
+        cb(null, `product-${uuid()}${extname(file.originalname)}`);
+    },
+  })}))
+  @Post('update-product')
+  async updateProduct(
+    @Body() data: UpdateProductInfoDto,
+    @Request() req,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'jpeg',
+        })
+        .addMaxSizeValidator({
+          maxSize: 200000
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+        }),
+    )
+    file: Express.Multer.File
+  ):Promise<void>{
+    const photo_data:RegisterProductPhotoDto={
+      path: file.filename,
+      product_id:''
+    };
+    await this._productService.updateTransaction(req.user, data, photo_data);
+  }
+
   // TODO delete a product
 
   // TODO create a product in

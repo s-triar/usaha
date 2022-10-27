@@ -134,3 +134,16 @@ export interface ProductInfoDto{
   stock:number;
   product_parent_barcode:string;
 }
+
+export interface ProductInfoUpdateDto{
+  id:string;
+  shop_id:string;
+  name:string;
+  barcode:string;
+  description:string;
+  contain:number;
+  theshold_stock:number;
+  product_type_id: number;
+  product_parent_barcode:string;
+  groups:ProductInfoGroupDto[];
+}

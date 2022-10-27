@@ -145,7 +145,6 @@ export class FormInfoProductKuComponent implements OnInit {
   }
 
   constructPriceLine():void{
-
     this.priceLineData= {
       datasets: [
         {

@@ -3,20 +3,20 @@
         <mat-label>Harga Jual Produk</mat-label>
         <span matPrefix>Rp&nbsp;</span>
         <app-input-currency placeholder="Harga Jual Produk" formControlName="Price" ></app-input-currency>
-        <mat-hint class="color-warn" *ngIf="(PriceProduct?.dirty || PriceProduct?.touched) && PriceProduct?.errors?.required">Harga jual produk harus diisi.</mat-hint>
-        <mat-hint class="color-warn" *ngIf="(PriceProduct?.dirty || PriceProduct?.touched) && PriceProduct?.errors?.min">Nilai minimal adalah 0.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(PriceProduct?.dirty || PriceProduct?.touched) && PriceProduct?.hasError('required')">Harga jual produk harus diisi.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(PriceProduct?.dirty || PriceProduct?.touched) && PriceProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
     </mat-form-field>
     <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
         <mat-label>Harga Jual Grosir Produk</mat-label>
         <span matPrefix>Rp&nbsp;</span>
         <app-input-currency placeholder="Harga Jual Grosir Produk" formControlName="WholesalerPrice" ></app-input-currency>
-        <mat-hint class="color-warn" *ngIf="(WholesalerPriceProduct?.dirty || WholesalerPriceProduct?.touched) && WholesalerPriceProduct?.errors?.required">Harga jual grosir produk harus diisi.</mat-hint>
-        <mat-hint class="color-warn" *ngIf="(WholesalerPriceProduct?.dirty || WholesalerPriceProduct?.touched) && WholesalerPriceProduct?.errors?.min">Nilai minimal adalah 0.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(WholesalerPriceProduct?.dirty || WholesalerPriceProduct?.touched) && WholesalerPriceProduct?.hasError('required')">Harga jual grosir produk harus diisi.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(WholesalerPriceProduct?.dirty || WholesalerPriceProduct?.touched) && WholesalerPriceProduct?.hasError('min')">Nilai minimal adalah 0.</mat-hint>
     </mat-form-field>
     <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
         <mat-label>Minimal Beli Produk Untuk Grosir</mat-label>
         <input type="number" matInput placeholder="Minimal Beli Produk Untuk Grosir" formControlName="WholesalerMin" min="1" style="text-align: right;">
-        <mat-hint class="color-warn" *ngIf="(WholesalerMinProduct?.dirty || WholesalerMinProduct?.touched) && WholesalerMinProduct?.errors?.min">Nilai minimal adalah 1.</mat-hint>
+        <mat-hint class="color-warn" *ngIf="(WholesalerMinProduct?.dirty || WholesalerMinProduct?.touched) && WholesalerMinProduct?.hasError('min')">Nilai minimal adalah 1.</mat-hint>
     </mat-form-field>
     <div class="mat-form-field">
         <mat-checkbox formControlName="IsWholesalerPriceAuto">Otomatis harga grosir jika minimal terpenuhi?</mat-checkbox>
