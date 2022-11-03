@@ -4,13 +4,14 @@ import {
   RouterStateSnapshot,
   ActivatedRouteSnapshot
 } from '@angular/router';
+import { ProductInfoDto } from '@usaha/api-interfaces';
 import { map, Observable, of } from 'rxjs';
 import { ProductService } from '../../../services/product.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ProductUpdateInfoResolver implements Resolve<boolean> {
+export class ProductUpdateInfoResolver implements Resolve<ProductInfoDto|undefined> {
   constructor(private _productService:ProductService){}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ProductInfoDto|undefined> {

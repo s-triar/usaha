@@ -82,6 +82,18 @@ export interface VillageDto{
   name:string;
   district_id:string;
 }
+
+export interface MyShopInfoDto {
+  id: string;
+  shop_code: string;
+  shop_type_name: string;
+  photo:string;
+  name:string;
+  phone:string;
+  owned:boolean;
+  address:string;
+}
+
 export interface ProductOfMyShopListItemDto {
   id: string;
   shop_id: string;
@@ -146,4 +158,17 @@ export interface ProductInfoUpdateDto{
   product_type_id: number;
   product_parent_barcode:string;
   groups:ProductInfoGroupDto[];
+}
+
+export interface ProductCashierSearchDto{
+  id: string;
+  enterpriseId: string;
+  barcode: string;
+  name: string;
+  price: number;
+  wholesalerPrice: number;
+  wholesalerMin: number;
+  promos: any[];
+  isWholesalerPriceAuto: boolean;
+  goodsPackaging: string;
 }

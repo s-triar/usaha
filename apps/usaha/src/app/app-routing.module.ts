@@ -91,6 +91,10 @@ const routes: Routes = [
                 path: 'product',
                 loadComponent: () => import('./modules/workspace/product/product.component').then(x=>x.ProductComponent)
             },
+            {
+                path: 'settings',
+                loadComponent: () => import('./modules/workspace/setting/setting.component').then(x=>x.SettingComponent)
+            },
         ]
     },
     {

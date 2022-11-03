@@ -4,18 +4,20 @@ import {
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpResponse,
+  // HttpResponse,
   HttpErrorResponse,
   HttpContextToken,
   HttpContext
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
+import { PopUpNotifService } from '../components/pop-up/pop-up-notif/pop-up-notif.service';
+import { environment } from '../../environments/environment';
 // import { CUSTOM_HEADER } from '../values';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { PopUpKuNotifService } from 'src/app/components/pop-up-ku/pop-up-ku-notif/pop-up-ku-notif.service';
-import { environment } from 'src/environments/environment';
-import { PopUpNotifService } from 'src/app/ui/components/pop-up/pop-up-notif/pop-up-notif.service';
+
+
 
 
 const SHOW_ERROR_DIALOG_TOKEN = new HttpContextToken<boolean>(() => false);
@@ -27,7 +29,7 @@ export function showErrorDialogContext(): HttpContext {
 export class NotificationInterceptor implements HttpInterceptor {
 
   constructor(private notifService: PopUpNotifService) {}
-  private getError(errors:object):string{
+  private getError(errors:any):string{
     let error ='';
     for (const key in errors) {
       if (Object.prototype.hasOwnProperty.call(errors, key)) {
@@ -63,7 +65,7 @@ export class NotificationInterceptor implements HttpInterceptor {
             this.notifService.show({type: 'error', message: msg, title: 'Error'});
           }
         }
-        return throwError(error);
+        return throwError(()=>error);
       })
     );
   }

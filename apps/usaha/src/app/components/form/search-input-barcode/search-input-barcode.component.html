@@ -1,0 +1,80 @@
+<div class="w-100-pr" >
+    <mat-form-field appearance="fill" class="w-100-pr" shouldLabelFloat="false" floatLabel="never" >
+        <input matInput type="search" 
+        #inputFieldBarcode
+        [(ngModel)]="value"
+        [disabled]="isDisabled"
+        (input)="onChange($event)"
+        (blur)="touched()"
+        [placeholder]="labelName"
+        autocomplete="off"
+        >
+        <button matSuffix type="button" mat-icon-button color="primary"  (click)="toggleScanner()">
+            <mat-icon>qr_code</mat-icon>
+        </button>
+        <!-- <mat-icon matSuffix>sentiment_very_satisfied</mat-icon> -->
+      </mat-form-field>
+    <!-- <div class="w-100-pr">
+        <input class="w-100-pr border border-gray-300 rounded-sm font-thin" type="text" 
+        [(ngModel)]="value"
+        [disabled]="isDisabled"
+        (input)="onChange($event)"
+        (blur)="touched()"
+        [placeholder]="labelName"
+        >
+        <button (click)="toggleScanner()" type="button" 
+        class="block w-7 h-7 text-center text-md  leading-0 absolute top-2 right-2  focus:outline-none  transition-colors rounded-full"
+        [ngClass]="scannerEnabled ? 'bg-satu text-white hover:text-white hover:bg-satu-dark':'bg-gray-300 text-white hover:text-white hover:bg-satu-light' "
+        ><i class="fa fa-qrcode"></i></button>
+    </div> -->
+    <div class="scanner-container" *ngIf="scannerEnabled">
+        <mat-form-field appearance="fill" shouldLabelFloat="true" class="w-100-pr">
+            <mat-label>Pilih Kamera ---</mat-label>
+            <mat-select (selectionChange)="changeDevice($event)" #cameras >
+                <mat-option *ngIf="hasDevices" value="">Pilih kamera</mat-option>
+                <mat-option *ngIf="!hasDevices" value="">Tidak ada perangkat kamera</mat-option>
+                <mat-option *ngIf="(hasPermission ===undefined || hasPermission === false) && hasDevices === true" value="">Izinkan penggunaan kamera untuk memulai scanning</mat-option>
+                <mat-option *ngFor="let device of availableDevices" [value]="device.deviceId">{{device.label}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <!-- <select (change)="changeDevice($event)" #cameras class="w-100-pr border border-gray-300 rounded-sm font-thin">
+            <option *ngIf="hasDevices" value="">Pilih kamera</option>
+            <option *ngIf="!hasDevices" value="">Tidak ada perangkat kamera</option>
+            <option *ngIf="(hasPermission ===undefined || hasPermission === false) && hasDevices === true" value="">Izinkan penggunaan kamera untuk memulai scanning</option>
+
+            <option *ngFor="let device of availableDevices" [value]="device.deviceId">{{device.label}}</option>
+        </select> -->
+        <!-- <ng-container *ngIf="scannerEnabled"> -->
+            <zxing-scanner 
+            id="barcode-camera"
+            class="w-100-pr"
+            #scanner
+            [enable]="scannerEnabled"
+            [formats]="allowedFormats"
+            [torch]="torchEnabled" 
+            [tryHarder]="tryHarder"
+            [device]="deviceCurrent"
+            (deviceChange)="onDeviceChange($event)"
+            (permissionResponse)="onHasPermission($event)"
+            (camerasFound)="camerasFoundHandler($event)"
+            (camerasNotFound)="camerasNotFoundHandler($event)"
+            (scanSuccess)="scanSuccessHandler($event)"
+            (scanError)="scanErrorHandler($event)"
+            (scanFailure)="scanFailureHandler($event)"
+            (scanComplete)="scanCompleteHandler($event)"
+        ></zxing-scanner>
+        <!-- </ng-container> -->
+        
+     
+        
+        <!-- <div *ngIf="hasDevices ===undefined || hasDevices === false" class="w-100-pr py-3 text-center">
+            <h3>Tidak ada kamera yang terdeteksi.</h3>
+        </div>
+        <div *ngIf="(hasPermission ===undefined || hasPermission === false) && hasDevices === true" class="w-100-pr py-3 text-center">
+            <h3>Izinkan penggunaan kamera untuk memulai scanning.</h3>
+        </div> -->
+        <!-- <div *ngIf="valueScanned !==undefined && valueScanned !== '' && isCompleted ===true" class="w-100-pr py-1 text-center absolute bottom-0 left-0 right-0"> 
+            <h3 class="bg-white">{{valueScanned}}</h3>
+        </div> -->
+    </div>
+</div>

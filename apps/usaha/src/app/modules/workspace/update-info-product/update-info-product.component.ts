@@ -43,8 +43,12 @@ export class UpdateInfoProductComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.idUsaha = this._aRoute.snapshot.data['shop_id'];
+    console.log(this._aRoute.snapshot.params);
+
+    this.idUsaha = this._aRoute.snapshot.params['shop_id'];
     this.dataGoods= this._aRoute.snapshot.data['product'];
+    console.log(this.idUsaha);
+    
   }
 
   submitted():void{

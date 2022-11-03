@@ -170,13 +170,16 @@ export class FormUpdateInfoProductKuComponent implements OnInit {
       if (res.length > 0){
         this.GoodsTypesData = res;
         this.GoodsTypes = this.GoodsTypesData.filter(x=>x.parent_id===0);
+        console.log(this.GoodsTypes);
         const temp = this.GoodsTypesData.find(
           (x) => x.id === this.dataGoods.product_type_id
         );
+        // console.log(temp);
+        
         this.GoodsTypes = res.filter((y) =>
-            temp?.parent_id
+            temp?.parent_id !== 0
               ? y.parent_id === temp?.parent_id
-              : y.parent_id === null
+              : y.parent_id === 0
           );
           if (temp?.parent_id) {
             this.temporarySelectedGoodType = temp?.parent_id;
@@ -185,7 +188,7 @@ export class FormUpdateInfoProductKuComponent implements OnInit {
           }
       }
     });
-    console.log(this.GoodsTypesData);
+    console.log(this.idUsaha);
   }
   cancel(): void {
     this.Canceled.emit();
@@ -208,7 +211,7 @@ export class FormUpdateInfoProductKuComponent implements OnInit {
     // temp.RemoveGoodsGroups = this.RemoveGoodsGroups.value.value ?? [];
     console.log(temp);
     this.productService
-      .update(temp)
+      .updateProduct(temp)
       .pipe(
         untilDestroyed(this),
         switchMap((x) =>
@@ -222,16 +225,18 @@ export class FormUpdateInfoProductKuComponent implements OnInit {
             .pipe(switchMap((y) => of(x)))
         )
       )
-      .subscribe((x: string) => this.Submitted.emit());
+      .subscribe(() => this.Submitted.emit());
   }
   initForm(): void {
     this.form = this.fb.nonNullable.group({
         id: this.fb.nonNullable.control(this.dataGoods.id,{validators:[Validators.required]}),
         shop_id: this.fb.nonNullable.control(this.idUsaha,{validators:[Validators.required]}),
-        barcode:this.fb.nonNullable.control(this.dataGoods.barcode,{
+        barcode:this.fb.nonNullable.control(this.dataGoods.barcode,
+          {
           validators:[Validators.required, Validators.maxLength(255)],
-          asyncValidators:[DuplicateBarcodeValidator.validate(this.productService, this.idUsaha)]
-        }),
+          // asyncValidators:[DuplicateBarcodeValidator.validate(this.productService, this.idUsaha)],
+        }
+        ),
         name:this.fb.nonNullable.control(this.dataGoods.name, {validators:[Validators.required, Validators.maxLength(255)]}),
         product_type_id: this.fb.nonNullable.control(this.dataGoods.product_type_id,{validators:[Validators.required]}),
         product_group_ids: this.fb.control(this.fb.array([])),

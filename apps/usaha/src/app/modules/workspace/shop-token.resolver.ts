@@ -17,9 +17,9 @@ export class ShopTokenResolver implements Resolve<string|undefined> {
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<string|undefined> {
     const t = route.params['shop_id'];
-    console.log("params shop_id", t);
+    // console.log("params shop_id", t);
     
-    return this._shopService.getShopToken(t).pipe(map(x=>x?t:undefined));
-    
+    // return this._shopService.getShopToken(t).pipe(map(x=>x?t:undefined));
+    return of(t); 
   }
 }

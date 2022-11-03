@@ -1,0 +1,119 @@
+<!-- barcode barang  -->
+<tr>
+    <td colspan="2"><span style="background-color: rgb(10, 230, 50); padding:2px 5px;" class="bg-green-200 px-1" *ngIf="item.isWholesalerPriceUsed">Grosir</span></td>
+    <td colspan="2" class="mat-small" style="margin-left: 3px;">
+        {{item.barcode}}
+    </td>
+</tr>
+<!-- end barcode barang  -->
+<!-- info barang  -->
+<tr class=" border-b border-gray-50" >
+    <td class="w-20" style="width: 40px;max-width: 80px;">
+        <mat-form-field appearance="fill" floatLabel="never" style="max-width: 80px;">
+            <input type="number" matInput  #qtyinput (change)="changeQty($event)" [value]="item.qty" style="text-align: right;" >
+        </mat-form-field>
+        <!-- <input type="number" #qtyinput (change)="changeQty($event)" class="bg-gray-100 w-full border border-gray-300 text-right" [value]="item.qty"> -->
+    </td>
+    <td >{{item.goodsPackaging}}</td>
+    <td 
+        class="clickable" 
+        style="padding-left:4px; cursor: pointer;" 
+        (click)="toogleAdditionalPanel()" >{{item.name}}</td>
+    <td 
+        class="clickable" 
+        style="padding-right:10px; cursor: pointer;text-align: right;" 
+        (click)="toogleAdditionalPanel()" >{{item.usedTotalPrice|currency:'Rp.  ':'symbol':'0.0-0'}}</td>
+</tr>
+<!-- end info barang  -->
+<!-- promo yang aktif  -->
+<!-- <tr class="" > 
+    <td colspan="3">
+        <mat-chip-list style="width: 100%; padding-top: 2px;padding-bottom: 2px;">
+            <mat-chip color="accent" selected>Beli 1 Gratis 1</mat-chip>
+        </mat-chip-list>
+    </td>
+    <td colspan="1"></td>
+</tr> -->
+<!-- end promo yang aktif  -->
+<!-- promo yang ada  -->
+<!-- <tr class="border-t border-gray-50" style="border-top: 1px solid rgb(165, 165, 165);" *ngIf="isAdditionalPanelOpened"> 
+    <td colspan="4">
+        <mat-chip-list style="width: 100%; padding-top: 2px;padding-bottom: 2px;">
+            <mat-chip >Beli 10 Gratis 1 Mangkok</mat-chip>
+        </mat-chip-list>
+    </td>
+</tr> -->
+<!-- end promo yang ada  -->
+<!-- diskon tambahan  -->
+<tr *ngIf="isAdditionalPanelOpened"> 
+    <td colspan="4">
+        <div class="w-full py-2" style="width: 100%; padding-top: 2px;padding-bottom: 2px;">
+            <div class="">
+                <mat-slide-toggle
+                    class="text-semi-bold"
+                    color="accent"
+                    (change)="toggleWholesaler($event)" [disabled]="(item.isWholesalerPriceUsed && item.isWholesalerPriceAuto) || (item.qty < item.wholesalerMin)" [checked]="item.isWholesalerPriceUsed"
+                    >
+                    Gunakan harga grosir
+                    <span class="text-semi-bold color-warn" *ngIf="(item.qty < item.wholesalerMin)"> (Belum mencapai minimum qty = {{item.wholesalerMin}})</span> 
+                    <span class="text-semi-bold color-accent" *ngIf="(item.isWholesalerPriceUsed && item.isWholesalerPriceAuto)"> (Auto grosir) </span>
+                </mat-slide-toggle>
+                <!-- <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="toggle" id="toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" (click)="toggleWholesaler($event)" [disabled]="(item.isWholesalerPriceUsed && item.isWholesalerPriceAuto) || (item.qty < item.wholesalerMin)" [checked]="item.isWholesalerPriceUsed"/>
+                    <label for="toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                </div>
+                <label for="toggle" class="text-xs text-gray-700">Gunakan harga grosir 
+                    <span class="font-semibold text-red-500" *ngIf="(item.qty < item.wholesalerMin)"> (Belum mencapai minimum qty = {{item.wholesalerMin}})</span> 
+                    <span class="font-semibold text-green-500" *ngIf="(item.isWholesalerPriceUsed && item.isWholesalerPriceAuto)"> (Auto grosir) </span>
+                </label> -->
+            </div>
+            <div>
+                <table  style="width: 100%; table-layout: auto; display: table; border-collapse:collapse;">
+                    <tbody  style="border-bottom: 1px solid rgb(165, 165, 165);">
+                        <tr>
+                            <td>Harga satuan :</td>
+                            <td  style="text-align: right; padding-right: 10px;">{{( item.isWholesalerPriceUsed ? item.wholesalerPrice : item.price)|currency:'Rp.  ':'symbol':'0.0-0'}}</td>
+                        </tr>
+                        <tr>
+                            <td>Diskon satuan :</td>
+                            <td  style="text-align: right;">
+                                <mat-form-field appearance="fill" floatLabel="never">
+                                    <span matPrefix>Rp.</span>
+                                    <usaha-input-currency #singleD (keyup)="changeSingleDisc(singleD)" [value]="item.singlePriceDisc"></usaha-input-currency>
+                                </mat-form-field>
+                                <!-- <div class="relative w-full p-0 ">
+                                    <input type="text" class="bg-gray-100 w-full h-full border border-gray-300 text-right pl-6" (keyup)="changeSingleDisc($event)" value="0">
+                                    <div class="absolute left-1 top-0 bottom-0 h-full table "><span class="table-cell align-middle">Rp.</span></div>
+                                </div> -->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Harga satuan akhir :</td>
+                            <td style="text-align: right; padding-right: 10px;">{{item.usedPrice|currency:'Rp.  ':'symbol':'0.0-0'}}</td>
+                        </tr>
+                    </tbody>
+                    <tbody style="border-top: 1px solid rgb(165, 165, 165);">
+                        <tr>
+                            <td>Harga total :</td>
+                            <td  style="text-align: right; padding-right: 10px;">{{(item.tempUsedTotalPrice)|currency:'Rp.  ':'symbol':'0.0-0'}}</td>
+                        </tr>
+                        <tr>
+                            <td>Diskon total :</td>
+                            <td style="text-align: right; ">
+                                <mat-form-field appearance="fill" floatLabel="never">
+                                    <span matPrefix>Rp.</span>
+                                    <usaha-input-currency #totalD (keyup)="changeTotalDisc(totalD)" [value]="item.totalPriceDisc"></usaha-input-currency>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Harga total akhir :</td>
+                            <td  style="text-align: right; padding-right: 10px;">{{item.usedTotalPrice|currency:'Rp.  ':'symbol':'0.0-0'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </td>
+</tr>
+<!-- end diskon tambahan  -->

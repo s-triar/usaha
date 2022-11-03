@@ -46,6 +46,11 @@ export class WorkspaceComponent implements OnInit, OnDestroy, AfterViewChecked {
       name:'Produk',
       path:'product',
       icon: 'price_change'
+    },
+    {
+      name:'Pengaturan',
+      path:'settings',
+      icon: 'settings'
     }
   ]
   constructor(

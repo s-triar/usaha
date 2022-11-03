@@ -141,3 +141,8 @@ export interface RegisterProductPhotoFileDto{
   product_id:string;
   file:File;
 }
+
+export interface CashierProductSearchRequest {
+  search: string;
+  shop_id: string;
+}

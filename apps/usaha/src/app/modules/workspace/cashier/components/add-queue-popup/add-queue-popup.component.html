@@ -1,0 +1,17 @@
+<form [formGroup]="form" (ngSubmit)="closeWithValue()">
+    <div mat-dialog-title class="add-queue-title-container">
+        <span>Tambah Antrian</span>
+    </div>
+    <div mat-dialog-content class="add-queue-content-container">
+        <mat-form-field appearance="fill" shouldLabelFloat="true" floatLabel="always">
+            <mat-label>Nama Pembeli</mat-label>
+            <input matInput type="text" formControlName="key" placeholder="Nama Pembeli" autocomplete="off" cdkFocusInitial>
+            <mat-hint class="color-warn" *ngIf="(form.controls.key?.dirty || form.controls.key?.touched) && form.controls.key?.hasError('required')">Nama pembeli harus diisi atau tekan tombol random.</mat-hint>
+            <mat-hint class="color-warn" *ngIf="(form.controls.key?.dirty || form.controls.key?.touched) && form.controls.key?.hasError('keyIsReservedError')">Nama pembeli ada yang sama. Mohon gunakan nama yang lain.</mat-hint>
+        </mat-form-field>
+    </div>
+    <div mat-dialog-actions class="add-queue-action-container">
+        <button mat-stroked-button type="button" (click)="closeWithRandom()" color="primary" >Random</button>
+        <button mat-flat-button type="submit" [disabled]="!form.valid" color="primary">Ok</button>
+    </div>
+</form>

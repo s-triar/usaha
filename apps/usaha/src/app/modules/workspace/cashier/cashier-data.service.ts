@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
+import { ProductCashierSearchDto } from '@usaha/api-interfaces';
 import { BehaviorSubject } from 'rxjs';
-import { POSCashierList, POSCashierContainerItem, POSCashierItem } from 'src/app/application/types';
-import { MyGoodsForCashierDto } from 'src/app/domain/backend/Dtos';
 
 import {v1 as uuidV1} from 'uuid';
+import { POSCashierContainerItem } from './components/cashier-item-container/cashier-item-container.component';
+import { POSCashierItem } from './components/cashier-item-container/cashier-item/cashier-item.component';
+
+export type POSCashierList = {
+  [queue: string]: POSCashierContainerItem
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -61,7 +67,7 @@ export class CashierDataService {
     }
   }
 
-  add(index: string, item: MyGoodsForCashierDto): void{
+  add(index: string, item: ProductCashierSearchDto): void{
     // console.log(item.barcode);
     const temp = this.POSList.value;
     const tempIndex = temp[index];
@@ -111,7 +117,7 @@ export class CashierDataService {
       tempUsedTotalPrice
     };
   }
-  convertDTOtoItem(item: MyGoodsForCashierDto): POSCashierItem {
+  convertDTOtoItem(item: ProductCashierSearchDto): POSCashierItem {
     const isWholesalerPriceUsed = item.isWholesalerPriceAuto && (item.wholesalerMin === 1) ? true : false;
     const usedPrice = isWholesalerPriceUsed ?  item.wholesalerPrice : item.price;
     return {

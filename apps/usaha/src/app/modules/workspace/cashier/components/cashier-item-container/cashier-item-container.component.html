@@ -1,0 +1,53 @@
+<ng-container *ngIf="data.items.length > 0">
+
+    <div class="receipt-list-item-container">
+        <table class="list-item-table">
+            
+            <usaha-cashier-item 
+                class="receipt-item " 
+                *ngFor="let item of data.items;let i=index" 
+                [style]="i%2===0? 'background-color: rgba(245,245,245,0.6);' : ''"
+                [item]="item" 
+                (newlyAdded)="newlyAdded($event)"
+                (singleDiscChange)="singleDiscChange($event)"
+                (totalDiscChange)="totalDiscChange($event)"
+                (qtyChange)="changeQty($event)"
+                (wholesalerToggleChange)="toggleWholesaler($event)"
+                ></usaha-cashier-item>
+        </table>
+
+        <table class="payment-table">
+            <tfoot style="margin-top:4px;">
+                <tr 
+                    style="text-align: right; font-weight: 600; border-top:1px solid gray;line-height: 2rem;"
+                >
+                    <td colspan="3" class=""><span>Total Bayar : </span></td>
+                    <td colspan="1" style="padding-right: 10px;">{{data.totalPayment|currency:'Rp.  ':'symbol':'0.0-0'}}</td>
+                </tr>
+                <tr 
+                    style="text-align: right; border-top:1px solid gray;"
+                >
+                    <td colspan="3" class=""><span>Uang Bayar : </span></td>
+                    <td colspan="1" class="">
+                        <mat-form-field appearance="fill" floatLabel="never">
+                            <span matPrefix>Rp.</span>
+                            <usaha-input-currency #paymentComp (keyup)="updatePayment(paymentComp)" [value]="data.payment"></usaha-input-currency>
+                            
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr 
+                    style="text-align: right; border-top:1px solid gray;padding-top:3px; padding-bottom:3px; line-height: 2rem;"
+                    >
+                    <td colspan="3" class=""><span>Kembalian : </span></td>
+                    <td colspan="1" class="pr-3" style="padding-right: 10px;">{{data.return|currency:'Rp.  ':'symbol':'0.0-0'}}</td>
+                </tr>
+            </tfoot>
+        </table>
+        
+    </div>
+    <div class="receipt-action">
+        <button mat-flat-button color="warn" (click)="canceling()">Batal</button>
+        <button mat-raised-button color="primary" (click)="paying()">Bayar</button>
+    </div>
+</ng-container>

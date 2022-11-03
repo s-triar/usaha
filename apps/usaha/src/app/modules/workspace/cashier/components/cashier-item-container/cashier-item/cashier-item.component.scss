@@ -1,0 +1,22 @@
+.toggle-checkbox:checked {
+    // @apply tw-right-0 ;
+    // @apply tw-border-green-400;
+    border-color: rgb(74 222 128);
+    right: 0;
+    border-color: #00ac25;
+    color: white;
+    background-color: #00db37;
+  }
+  .toggle-checkbox:checked + .toggle-label {
+    // @apply tw-bg-green-300;
+    // background-color: #68d391d5;
+    background-color: rgb(134 239 172)
+  }
+
+.text-semi-bold{
+  font-weight: 400;
+}
+
+.clickable:hover{
+  background-color: rgb(200, 200, 200);
+}

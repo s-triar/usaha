@@ -1,1 +1,62 @@
-<p>cashier works!</p>
+<!-- <app-portal-container querySelector="#workspace-utility"> -->
+    <form class="w-full" [formGroup]="formSearch" >
+        <usaha-search-input-barcode
+        labelName="Cari Produk"
+        [parentForm]="formSearch"
+        fieldName="search"
+        formControlName="search" class="w-full h-full"></usaha-search-input-barcode>
+    </form>
+    <mat-list class="list-search scrollbar-thin">
+        <mat-list-item  *ngFor="let item of searchList$ | async" style="width: 100%;border-top:1px rgba(194, 192, 192, 0.856) solid;border-bottom:1px rgba(194, 192, 192, 0.856) solid;" (click)="addItem(item.id)">
+            <usaha-cashier-item-search [item]="item" style="width: 100%;"></usaha-cashier-item-search>
+        </mat-list-item>
+    </mat-list>
+
+<!-- </app-portal-container> -->
+
+<button 
+    mat-fab 
+    id="cashier-queue-btn" 
+    color="primary" 
+    *ngIf="!bufferOpened" 
+    matTooltip="Buka buffer antrian kasir"
+    matTooltipClass="app-tooltip"
+    (click)="toggleBuffer('open')">
+    <!-- <fa-icon [icon]="icons.queue"></fa-icon> -->
+    <mat-icon>{{icons.queue}}</mat-icon>
+</button>
+<!-- <app-button-rectangle id="cashier-queue-btn" class="absolute left-0 bottom-16 order bg-dua z-20 shadow-lg " theme="dua" text="Buffer" *ngIf="!bufferOpened" (click)="toggleBuffer('open')"></app-button-rectangle> -->
+<div id="cashier-queue" class="absolute left-0 top-36 bottom-28 w-72 h-60vh border bg-white z-20 shadow-lg  flex flex-col mat-elevation-z8" *ngIf="bufferOpened">
+    <mat-toolbar class="buffer-header" color="primary">
+        <span>Buffer</span>
+        <button mat-icon-button (click)="toggleBuffer('close')">
+            <!-- <fa-icon [icon]="icons.close"></fa-icon> -->
+            <mat-icon>{{icons.close}}</mat-icon>
+        </button>
+    </mat-toolbar>
+    <mat-action-list class="buffer-content scrollbar-thin">
+        <button mat-list-item *ngFor="let item of totalQueue; let i = index" [class]="indexQueueCurrent===item ? 'bg-color-accent' : ''" (click)="changeBuffer(item)"> {{item}} </button>
+        
+      </mat-action-list>
+    <div class="buffer-action">
+        <button mat-icon-button color="warn" (click)="removeBuffer()">
+            <!-- <fa-icon [icon]="icons.delete"></fa-icon> -->
+            <mat-icon>{{icons.delete}}</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" (click)="addBuffer()">
+            <!-- <fa-icon [icon]="icons.add"></fa-icon> -->
+            <mat-icon>{{icons.add}}</mat-icon>
+
+        </button>
+    </div>
+</div>   
+
+<div id="cashier-container" class="w-full h-full pt-3">
+    <usaha-cashier-item-container 
+        [index]="indexQueueCurrent"
+        [data]="posList"
+        (update)="update($event)"
+        (pay)="pay($event)"
+        (cancel)="cancel($event)"   
+    ></usaha-cashier-item-container>
+</div>

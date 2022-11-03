@@ -1,0 +1,16 @@
+.add-queue-title-container{
+    text-align: center;
+    font-weight: 400;
+    font-size: large;
+}
+.add-queue-content-container{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    text-align: center;
+}
+.add-queue-action-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    justify-items: center;
+}
